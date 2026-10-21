@@ -31,6 +31,7 @@ const PATHS: Record<string, string> = {
   search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
   trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13",
   check: "M5 12.5 10 17l9-10",
+  logout: "M15 4h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3M10 16l-4-4 4-4M6 12h10",
   alert: "M12 9v4M12 17h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z",
 };
 

@@ -33,7 +33,7 @@ export function Layout() {
   const dispatch = useAppDispatch();
   const { theme, hideAmounts } = useAppSelector((s) => s.prefs);
   const [sheet, setSheet] = useState<SheetState>({ key: 0, open: false });
-  const { usuario } = useCuenta();
+  const { usuario, cerrarSesion } = useCuenta();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -92,6 +92,11 @@ export function Layout() {
               </span>
             </NavLink>
           )}
+          {usuario && (
+            <button type="button" className="side__salir" onClick={() => void cerrarSesion()}>
+              <Icon name="logout" size={18} /> Cerrar sesión
+            </button>
+          )}
         </aside>
 
         <div className="main-col">
@@ -110,6 +115,11 @@ export function Layout() {
               <NavLink to="/ajustes" className="icon-btn" aria-label="Ajustes">
                 <Icon name="settings" />
               </NavLink>
+              {usuario && (
+                <button type="button" className="icon-btn" onClick={() => void cerrarSesion()} aria-label="Cerrar sesión" title="Cerrar sesión">
+                  <Icon name="logout" />
+                </button>
+              )}
             </div>
           </header>
           <main id="contenido" className="main">

@@ -208,6 +208,18 @@ describe("cuentas con Supabase", () => {
     expect(await screen.findByRole("heading", { name: "Qué bueno verte" })).toBeInTheDocument();
   });
 
+  it("el botón Cerrar sesión de la barra lateral cierra la sesión", async () => {
+    montar();
+    fake.crearUsuario("orlando@correo.co", "la-buena-123", "Orlando");
+    await pantallaEntrar();
+    await escribir(/^Correo/, "orlando@correo.co");
+    await escribir(/^Contraseña/, "la-buena-123");
+    await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
+    await enApp();
+    await userEvent.click(screen.getAllByRole("button", { name: "Cerrar sesión" })[0]);
+    expect(await pantallaEntrar()).toBeInTheDocument();
+  });
+
   it("eliminar la cuenta pide escribir el correo y borra todo", async () => {
     const { router } = montar();
     fake.crearUsuario("orlando@correo.co", "la-buena-123", "Orlando");
