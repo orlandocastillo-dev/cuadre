@@ -46,7 +46,7 @@ Todo se calcula en `src/domain/insights.ts`, con funciones puras que se prueban 
 | Interfaz | React 19, TypeScript estricto, Vite, React Router 7 |
 | Estado y datos | Redux Toolkit con **RTK Query** sobre un repositorio, con actualizaciones optimistas: el gasto aparece al instante y, si guardar falla, se revierte |
 | Gráficos | SVG hecho a mano. Ingresos y gastos con un solo eje, colores validados para daltonismo y tabla equivalente para lectores de pantalla |
-| Diseño | Bricolage Grotesque e Instrument Sans, tema claro y oscuro |
+| Diseño | Instrument Serif para los títulos y Geist con cifras tabulares para el texto y los montos, fondo de papel cálido, tema claro y oscuro |
 | Calidad | Vitest y Testing Library (42 pruebas), oxlint, CI en GitHub Actions |
 
 ### Lista para una base de datos

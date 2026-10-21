@@ -1,17 +1,18 @@
 /*
   Cuadre. La cifra que importa ("te quedan") va grande y sola; todo lo demás es tranquilo.
   Verde para lo que entra, violeta para lo que sale (pareja validada para daltonismo), rojo solo para
-  "te pasaste". Bricolage Grotesque para las cifras y títulos, Instrument Sans para todo lo demás.
+  "te pasaste". Fondo de papel cálido. Instrument Serif para los títulos y Geist para todo lo demás,
+  con cifras tabulares para que los montos se alineen.
 */
 
 :root {
-  --bg: #f3f5f2;
-  --surface: #ffffff;
-  --ink: #14201b;
-  --muted: #5c6a63;
-  --faint: #94a19a;
-  --line: #e2e7e3;
-  --line-strong: #c9d1cb;
+  --bg: #f6f3ec;
+  --surface: #fffdf8;
+  --ink: #1c1a16;
+  --muted: #6b665c;
+  --faint: #9a9488;
+  --line: #e7e1d4;
+  --line-strong: #d3cbbb;
   --in: #12865f;
   --out: #6a5bd0;
   --over: #c8432f;
@@ -19,8 +20,9 @@
   --warn: #9a6200;
   --warn-wash: #fbf1dc;
   --in-wash: #e3f3ec;
-  --display: "Bricolage Grotesque Variable", "Instrument Sans Variable", system-ui, sans-serif;
-  --body: "Instrument Sans Variable", system-ui, sans-serif;
+  --display: "Instrument Serif", Georgia, serif;
+  --body: "Geist Variable", system-ui, sans-serif;
+  --mono: "Geist Variable", system-ui, sans-serif;
   --r-panel: 18px;
   --r-control: 10px;
   color-scheme: light;
@@ -39,13 +41,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1412;
-    --surface: #151d1a;
-    --ink: #e6ece9;
-    --muted: #95a39c;
-    --faint: #66746d;
-    --line: #24302b;
-    --line-strong: #34413b;
+    --bg: #12110e;
+    --surface: #1b1915;
+    --ink: #ece7dd;
+    --muted: #a39d90;
+    --faint: #6f695e;
+    --line: #2a2721;
+    --line-strong: #3a362e;
     --in: #27a37a;
     --out: #7d72e6;
     --over: #ff7b69;
@@ -68,13 +70,13 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: #0e1412;
-  --surface: #151d1a;
-  --ink: #e6ece9;
-  --muted: #95a39c;
-  --faint: #66746d;
-  --line: #24302b;
-  --line-strong: #34413b;
+  --bg: #12110e;
+  --surface: #1b1915;
+  --ink: #ece7dd;
+  --muted: #a39d90;
+  --faint: #6f695e;
+  --line: #2a2721;
+  --line-strong: #3a362e;
   --in: #27a37a;
   --out: #7d72e6;
   --over: #ff7b69;
@@ -120,12 +122,17 @@ p {
   margin: 0;
 }
 
-h1,
-h2 {
+h1 {
   font-family: var(--display);
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+h2 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 a {
@@ -210,8 +217,8 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  font: 700 1.4rem var(--display);
-  letter-spacing: -0.03em;
+  font: 400 1.75rem/1 var(--display);
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
 .brand__mark {
@@ -299,7 +306,7 @@ textarea {
   gap: 0.35rem;
 }
 .title-row h1 {
-  font-size: clamp(1.8rem, 4vw, 2.3rem);
+  font-size: clamp(2.3rem, 5vw, 3rem);
 }
 .title-row p {
   max-width: 62ch;
@@ -537,7 +544,7 @@ textarea:focus,
 .month__label {
   min-width: 8.5rem;
   text-align: center;
-  font: 600 1.05rem var(--display);
+  font: 600 1rem var(--body);
 }
 .month__today {
   margin-left: 0.6rem;
@@ -558,8 +565,8 @@ textarea:focus,
   font-weight: 550;
 }
 .hero__amount {
-  font: 720 clamp(2.9rem, 9vw, 4.8rem) / 1 var(--display);
-  letter-spacing: -0.045em;
+  font: 400 clamp(3.4rem, 10vw, 5.6rem) / 0.95 var(--display);
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .hero__amount.is-over {
@@ -819,7 +826,8 @@ textarea:focus,
 }
 .chart__axis {
   fill: var(--muted);
-  font: 500 11px var(--body);
+  font: 500 15px var(--body);
+  font-variant-numeric: tabular-nums;
 }
 .chart__axis.is-selected {
   fill: var(--ink);
@@ -1052,7 +1060,7 @@ textarea:focus,
 }
 .amount__sign {
   color: var(--faint);
-  font: 600 2rem var(--display);
+  font: 400 2.4rem var(--display);
 }
 .amount input {
   flex: 1;
@@ -1060,8 +1068,8 @@ textarea:focus,
   min-width: 0;
   border: 0;
   background: none;
-  font: 700 2.6rem / 1.1 var(--display);
-  letter-spacing: -0.03em;
+  font: 400 3.2rem / 1.05 var(--display);
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
   outline: none;
 }
@@ -1236,7 +1244,7 @@ textarea:focus,
   font-variant-numeric: tabular-nums;
 }
 .goal__amounts strong {
-  font: 700 1.25rem var(--display);
+  font: 500 1.1rem var(--mono);
 }
 .goal__track {
   height: 12px;
@@ -1420,12 +1428,12 @@ label.setting {
   max-width: 620px;
 }
 .brand--big {
-  font-size: 1.7rem;
+  font-size: 2.2rem;
 }
 .welcome h1 {
-  font-size: clamp(2.2rem, 6.5vw, 3.6rem);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.8rem, 8vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
 }
 .welcome__lead {
   color: var(--muted);
@@ -1597,4 +1605,128 @@ label.setting {
 
 .welcome__back:hover {
   color: var(--ink);
+}
+
+/* Montos en listas: cifras tabulares para que se alineen. */
+.tx__amount,
+.budget__amount,
+.review__amount {
+  font-family: var(--mono);
+  font-size: 0.95em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Resumen: la cifra grande sobre el papel, sin tarjeta ---------- */
+
+.page--dash {
+  gap: 1.75rem;
+  max-width: 1180px;
+}
+.page--dash .page__head {
+  justify-content: space-between;
+  margin-left: 0;
+}
+.page__day {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+.page--dash .hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.5rem 2rem;
+  padding: 0 0 1.75rem;
+  border: 0;
+  border-bottom: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: none;
+}
+.hero__main {
+  display: grid;
+  gap: 0.35rem;
+}
+.page--dash .hero__label {
+  font-size: 0.95rem;
+}
+.page--dash .hero__amount {
+  font: 600 clamp(3.2rem, 8.5vw, 6rem) / 0.95 var(--body);
+  letter-spacing: -0.055em;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  margin: 0 0 0.35rem;
+}
+.stats > div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0 1.4rem;
+  border-left: 1px solid var(--line-strong);
+}
+.stats dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.stats dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stats dd.is-in {
+  color: var(--in);
+}
+.page--dash .pace {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
+.pace__track,
+.bars__track,
+.budget__track,
+.pace__fill,
+.bars__fill,
+.budget__fill {
+  border-radius: 3px;
+}
+
+.page--dash .grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.panel {
+  padding: 1.4rem 1.5rem 1.5rem;
+  border-radius: 10px;
+}
+.panel__head h2,
+.panel__title {
+  font: 400 1.65rem / 1.1 var(--display);
+  letter-spacing: -0.01em;
+}
+.insight__icon {
+  border-radius: 6px;
+}
+
+@media (max-width: 1100px) {
+  .page--dash .grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .page--dash .hero {
+    grid-template-columns: 1fr;
+  }
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 0;
+  }
+  .stats > div {
+    padding: 0 0.9rem;
+  }
+  .stats > div:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
 }

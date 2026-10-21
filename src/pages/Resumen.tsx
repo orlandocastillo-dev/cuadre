@@ -42,27 +42,50 @@ export function Resumen() {
   const byId = new Map(ledger.categories.map((c) => [c.id, c]));
   const accounts = new Map(ledger.accounts.map((a) => [a.id, a]));
 
+  const left = daysInMonth(month) - dayOf(todayISO);
+  const label =
+    t.income > 0 ? (t.balance >= 0 ? (isCurrent ? "Te quedan" : "Te sobró") : isCurrent ? "Vas en rojo por" : "Gastaste de más") : "Llevas gastado";
+
   return (
-    <div className="page">
+    <div className="page page--dash">
       <div className="page__head">
         <MonthSwitcher />
+        {isCurrent && (
+          <p className="page__day">
+            Día {dayOf(todayISO)} de {daysInMonth(month)}
+          </p>
+        )}
       </div>
 
       <section className="hero" aria-labelledby="hero-label">
-        <p id="hero-label" className="hero__label">
-          {t.income > 0 ? (t.balance >= 0 ? (isCurrent ? "Te quedan" : "Te sobró") : isCurrent ? "Vas en rojo por" : "Gastaste de más") : "Llevas gastado"}
-        </p>
-        <p className={`hero__amount ${t.balance < 0 && t.income > 0 ? "is-over" : ""}`}>{money(t.income > 0 ? Math.abs(t.balance) : t.expense)}</p>
-        <p className="hero__sub">
-          {t.income > 0 ? (
-            <>
-              Entraron <strong>{money(t.income)}</strong> y salieron <strong>{money(t.expense)}</strong>
-              {t.saved > 0 && <>, de los cuales {money(t.saved)} fueron a ahorro</>}.
-            </>
-          ) : (
-            <>Registra tus ingresos de {monthLabel(month)} para ver cuánto te queda.</>
-          )}
-        </p>
+        <div className="hero__main">
+          <p id="hero-label" className="hero__label">
+            {label}
+          </p>
+          <p className={`hero__amount ${t.balance < 0 && t.income > 0 ? "is-over" : ""}`}>{money(t.income > 0 ? Math.abs(t.balance) : t.expense)}</p>
+          {t.income === 0 && <p className="hero__sub">Registra tus ingresos de {monthLabel(month)} para ver cuánto te queda.</p>}
+        </div>
+
+        {t.income > 0 && (
+          <dl className="stats">
+            <div>
+              <dt>Entró</dt>
+              <dd className="is-in">{money(t.income)}</dd>
+            </div>
+            <div>
+              <dt>Salió</dt>
+              <dd>{money(t.expense)}</dd>
+            </div>
+            <div>
+              <dt>A ahorro</dt>
+              <dd>{money(t.saved)}</dd>
+            </div>
+            <div>
+              <dt>{perDay !== null && t.balance > 0 ? "Por día" : "Usado"}</dt>
+              <dd>{perDay !== null && t.balance > 0 ? money(Math.floor(perDay / 1000) * 1000) : `${percent(t.expense, t.income)} %`}</dd>
+            </div>
+          </dl>
+        )}
 
         {t.income > 0 && (
           <div className="pace">
@@ -73,9 +96,9 @@ export function Resumen() {
             <p className="pace__text">
               {isCurrent ? (
                 <>
-                  Día {dayOf(todayISO)} de {daysInMonth(month)}: has usado el <strong>{percent(t.expense, t.income)} %</strong> de lo que entró.{" "}
+                  Has usado el <strong>{percent(t.expense, t.income)} %</strong> de lo que entró y va el {Math.round(elapsed * 100)} % del mes.{" "}
                   {ahead ? "Vas más rápido que el mes." : "Vas a buen ritmo."}
-                  {perDay !== null && t.balance > 0 && <> Puedes gastar unos {money(Math.floor(perDay / 1000) * 1000)} diarios hasta fin de mes.</>}
+                  {left > 0 && ` Quedan ${left} ${left === 1 ? "día" : "días"}.`}
                 </>
               ) : (
                 <>Usaste el {percent(t.expense, t.income)} % de lo que entró.</>
@@ -86,21 +109,7 @@ export function Resumen() {
       </section>
 
       <div className="grid">
-        <section className="panel" aria-labelledby="h-recos">
-          <div className="panel__head">
-            <h2 id="h-recos">Recomendaciones</h2>
-          </div>
-          <Insights items={tips} limit={5} />
-          {tips.length > 5 && (
-            <details className="more">
-              <summary>Ver {tips.length - 5} más</summary>
-              <Insights items={tips.slice(5)} />
-            </details>
-          )}
-          <p className="fineprint">Calculadas con tus propios movimientos. No son asesoría financiera.</p>
-        </section>
-
-        <section className="panel" aria-labelledby="h-cats">
+        <section className="panel panel--cats" aria-labelledby="h-cats">
           <div className="panel__head">
             <h2 id="h-cats">En qué se fue</h2>
             <Link to={`/presupuestos${isCurrent ? "" : `?mes=${month}`}`} className="link">
@@ -143,14 +152,28 @@ export function Resumen() {
           )}
         </section>
 
-        <section className="panel panel--wide" aria-labelledby="h-trend">
+        <section className="panel panel--recos" aria-labelledby="h-recos">
+          <div className="panel__head">
+            <h2 id="h-recos">Recomendaciones</h2>
+          </div>
+          <Insights items={tips} limit={5} />
+          {tips.length > 5 && (
+            <details className="more">
+              <summary>Ver {tips.length - 5} más</summary>
+              <Insights items={tips.slice(5)} />
+            </details>
+          )}
+          <p className="fineprint">Calculadas con tus propios movimientos. No son asesoría financiera.</p>
+        </section>
+
+        <section className="panel panel--trend" aria-labelledby="h-trend">
           <div className="panel__head">
             <h2 id="h-trend">{trend.length === 6 ? "Últimos 6 meses" : `Últimos ${trend.length} meses`}</h2>
           </div>
           <TrendChart data={trend} selected={month} onSelect={setMonth} />
         </section>
 
-        <section className="panel panel--wide" aria-labelledby="h-recent">
+        <section className="panel panel--recent" aria-labelledby="h-recent">
           <div className="panel__head">
             <h2 id="h-recent">Movimientos recientes</h2>
             <Link to={`/movimientos${isCurrent ? "" : `?mes=${month}`}`} className="link">

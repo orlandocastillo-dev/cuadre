@@ -3,22 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cuadre | Sabe cuánto te queda antes de que se acabe el mes</title>
+    <title>Cuadre | ¿Cuánto te queda para fin de mes?</title>
     <meta
       name="description"
-      content="Cuadre lleva tus gastos e ingresos, te marca el ritmo del mes y te avisa cuando algo se sale de lo normal, con tus propios números."
+      content="Cuadre lleva tus gastos e ingresos, te dice cuánto te queda cada día y te avisa antes de que te pases, con tus propios números."
     />
     <meta property="og:title" content="Cuadre, finanzas personales" />
     <meta property="og:description" content="Cuánto te queda, en qué se te va y qué puedes ajustar." />
     <meta property="og:image" content="img/movil-resumen.webp" />
-    <meta name="theme-color" content="#f3f5f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0e1412" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#12110e" media="(prefers-color-scheme: dark)" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2314201b'/%3E%3Cg transform='rotate(-12 16 16)'%3E%3Crect x='9' y='9' width='14' height='7' rx='2' fill='%2312865f'/%3E%3Crect x='9' y='16' width='14' height='7' rx='2' fill='%236a5bd0'/%3E%3C/g%3E%3C/svg%3E"
     />
-    <link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fonts/serif.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <script type="module" src="main.js"></script>
   </head>
   <body>
     <a class="skip" href="#contenido">Ir al contenido</a>
@@ -30,168 +35,187 @@
           cuadre
         </a>
         <nav class="top__nav" aria-label="Secciones">
-          <a href="#avisos">Avisos</a>
-          <a href="#como">Cómo funciona</a>
-          <a href="#calculo">Cómo calcula</a>
+          <a href="#mes"><span>01</span> El mes</a>
+          <a href="#avisos"><span>02</span> Avisos</a>
+          <a href="#proyeccion"><span>03</span> Proyección</a>
+          <a href="#pantallas"><span>04</span> Pantallas</a>
         </nav>
-        <a class="btn btn--dark btn--small" href="app/">Abrir Cuadre</a>
+        <a class="btn btn--ink btn--small" href="app/">Abrir Cuadre</a>
       </div>
     </header>
 
     <main id="contenido">
-      <section class="hero">
-        <div class="wrap hero__grid">
-          <div class="hero__copy">
-            <h1>Sabe cuánto te queda antes de que se acabe el mes.</h1>
-            <p class="lead">
-              Cuadre lleva tus gastos e ingresos, te marca el ritmo del mes y te avisa cuando algo se está saliendo de lo normal. Con tus
-              números, no con reglas genéricas.
-            </p>
-            <div class="actions">
-              <a class="btn btn--dark" href="app/">Empezar</a>
-              <a class="btn" href="app/#ejemplo">Verla con datos de ejemplo</a>
-            </div>
-            <p class="fine">Gratis y sin crear cuenta. Funciona en el celular y en el computador.</p>
+      <section class="hero" aria-labelledby="titulo">
+        <div class="wrap hero__inner">
+          <p class="kicker">Finanzas personales · hecho en Barranquilla</p>
+          <h1 id="titulo">¿Cuánto te queda para <em>fin de mes</em>?</h1>
+          <p class="lead">
+            Cuadre te lo dice todos los días. Anotas lo que gastas, le pones límite a lo que más se te va y te avisa antes de que te pases, con
+            tus números y no con reglas genéricas.
+          </p>
+          <div class="actions">
+            <a class="btn btn--ink" href="app/">Empezar gratis</a>
+            <a class="btn btn--line" href="app/#ejemplo">Verla con datos de ejemplo</a>
           </div>
-          <figure class="hero__shot">
-            <img
-              src="img/movil-resumen.webp"
-              width="390"
-              height="844"
-              alt="Resumen del mes en Cuadre: te quedan $410.500, con la barra de ritmo y las primeras recomendaciones."
-            />
-          </figure>
+        </div>
+      </section>
+
+      <!-- Un mes de ejemplo: toca cualquier día y todo se recalcula. -->
+      <section class="ledger-wrap" id="mes" aria-label="Mes de ejemplo">
+        <div class="wrap">
+          <div class="ledger" data-month>
+            <div class="ledger__left">
+              <p class="label">Te quedan · <span data-out="dayLabel">día 20 de 31</span></p>
+              <p class="ledger__big" data-out="left" aria-live="polite">$879.800</p>
+              <p class="ledger__sub" data-out="sub"></p>
+              <div class="pace" aria-hidden="true">
+                <div class="pace__fill" data-bar="pace"></div>
+                <div class="pace__mark" data-mark="today"></div>
+              </div>
+              <p class="ledger__pace" data-out="pace"></p>
+            </div>
+            <ul class="cats" data-cats></ul>
+            <div class="ledger__right">
+              <p class="label">Aviso del día</p>
+              <p class="alert" data-out="alert" role="status"></p>
+            </div>
+          </div>
+
+          <div class="days" role="group" aria-label="Elige un día del mes" data-days></div>
+          <p class="days__hint">Toca un día para ver cómo iba el mes. Mes de ejemplo con un ingreso de $3.300.000.</p>
         </div>
       </section>
 
       <section class="section" id="avisos" aria-labelledby="avisos-titulo">
         <div class="wrap">
-          <p class="eyebrow">Lo que te dice</p>
-          <h2 id="avisos-titulo">Avisos que salen de tu historial, en palabras normales.</h2>
-          <ul class="notes">
-            <li class="note note--over">
-              <strong>Te pasaste en domicilios y restaurantes.</strong>
-              <span>Llevas $329.000 de $220.000 y aún queda mes.</span>
-            </li>
-            <li class="note note--warn">
-              <strong>A este ritmo te pasas en mercado.</strong>
-              <span>Vas en $474.200 y terminarías cerca de $636.000, $36.000 más de lo que presupuestaste.</span>
-            </li>
-            <li class="note">
-              <strong>14 gastos pequeños en café y antojos.</strong>
-              <span>Suman $103.600 este mes. A ese ritmo serían unos $1.930.000 al año.</span>
-            </li>
-            <li class="note">
-              <strong>Pagas 4 suscripciones cada mes.</strong>
-              <span>Netflix, Disney+, YouTube Premium y Spotify: $88.600 al mes, $1.063.200 al año.</span>
-            </li>
-            <li class="note note--good">
-              <strong>Vas bien con la guitarra electroacústica.</strong>
-              <span>Para llegar a la fecha necesitas $192.000 al mes y vienes apartando $200.000.</span>
-            </li>
-          </ul>
-          <p class="fine">Ejemplos con los datos de muestra de la app. Son cálculos, no asesoría financiera.</p>
-        </div>
-      </section>
-
-      <section class="section section--rows" id="como" aria-labelledby="como-titulo">
-        <div class="wrap">
-          <p class="eyebrow">Cómo funciona</p>
-          <h2 id="como-titulo" class="visually-hidden">Cómo funciona</h2>
-
-          <article class="row">
-            <div class="row__text">
-              <h3>Anotar un gasto toma cinco segundos.</h3>
-              <p>
-                Escribes el valor, tocas la categoría y listo. Los puntos de miles salen solos mientras escribes, la fecha arranca en hoy y la
-                cuenta es la última que usaste: Efectivo, Bancolombia o Nequi.
-              </p>
-            </div>
-            <figure class="row__shot row__shot--phone">
-              <img src="img/movil-nuevo.webp" width="390" height="844" loading="lazy" alt="Formulario de nuevo gasto con el valor $8.500 y la categoría Café y antojos." />
-            </figure>
-          </article>
-
-          <article class="row">
-            <div class="row__text">
-              <h3>Un límite por categoría, y el aviso antes de pasarte.</h3>
-              <p>
-                Cada presupuesto muestra una marca con el día de hoy. Si la barra va delante de la marca, vas gastando más rápido que el mes.
-                Para lo que no tiene límite, Cuadre te sugiere uno según lo que sueles gastar.
-              </p>
-            </div>
-            <figure class="row__shot">
-              <img src="img/presupuestos.webp" width="800" height="510" loading="lazy" alt="Presupuestos de mercado, transporte, domicilios y café, con la marca del día en cada barra." />
-            </figure>
-          </article>
-
-          <article class="row">
-            <div class="row__text">
-              <h3>Sube el extracto del banco y Cuadre lo clasifica.</h3>
-              <p>
-                Acepta el CSV de Bancolombia, Nequi, Davivienda y otros. Reconoce las columnas, pone cada movimiento en su categoría y marca los
-                que ya tenías. Si corriges una, la recuerda para la próxima.
-              </p>
-            </div>
-            <figure class="row__shot">
-              <img src="img/importar.webp" width="800" height="610" loading="lazy" alt="Revisión de un extracto importado: Rappi en domicilios, Air-e en servicios, Olímpica en mercado." />
-            </figure>
-          </article>
-        </div>
-      </section>
-
-      <section class="section section--calc" id="calculo" aria-labelledby="calculo-titulo">
-        <div class="wrap calc">
-          <div>
-            <p class="eyebrow">Cómo calcula</p>
-            <h2 id="calculo-titulo">La proyección no es una regla de tres.</h2>
-            <p>
-              Si pagas el arriendo el día 2 y la app multiplica por los días del mes, te diría que vas a gastar más de trece millones. Cuadre
-              detecta los pagos que se repiten cada mes y los cuenta una sola vez. Solo lo variable, como el mercado o los domicilios, se proyecta
-              según los días que han pasado.
+          <header class="section__head reveal">
+            <p class="label">02 · Avisos</p>
+            <h2 id="avisos-titulo">Te avisa <em>antes</em>, no cuando ya te pasaste.</h2>
+            <p class="muted">
+              Cada aviso sale de tu propio historial: tus presupuestos, tu promedio de los últimos meses y los cobros que se repiten. Estos son
+              los que da la app con los datos de ejemplo.
             </p>
-          </div>
-          <table class="calc__table">
-            <caption>
-              Arriendo de $850.000 pagado el día 2 de 31
-            </caption>
-            <tbody>
-              <tr>
-                <th scope="row">Regla de tres</th>
-                <td>$13.175.000</td>
-              </tr>
-              <tr class="is-good">
-                <th scope="row">Cuadre</th>
-                <td>$850.000</td>
-              </tr>
-            </tbody>
-          </table>
+          </header>
+
+          <ol class="book">
+            <li class="entry entry--over reveal">
+              <span class="entry__when">Día 19</span>
+              <span class="entry__tag">Te pasaste</span>
+              <p class="entry__title">Domicilios y restaurantes</p>
+              <p class="entry__detail">Llevas $329.000 de $220.000 y aún queda mes.</p>
+            </li>
+            <li class="entry entry--warn reveal">
+              <span class="entry__when">Día 20</span>
+              <span class="entry__tag">Ritmo</span>
+              <p class="entry__title">A este ritmo te pasas en mercado</p>
+              <p class="entry__detail">Vas en $474.200 y terminarías cerca de $636.000, $36.000 más de lo que presupuestaste.</p>
+            </li>
+            <li class="entry reveal">
+              <span class="entry__when">Día 20</span>
+              <span class="entry__tag">Gastos hormiga</span>
+              <p class="entry__title">14 gastos pequeños en café y antojos</p>
+              <p class="entry__detail">Suman $103.600 este mes. A ese ritmo serían unos $1.930.000 al año.</p>
+            </li>
+            <li class="entry reveal">
+              <span class="entry__when">Cada mes</span>
+              <span class="entry__tag">Suscripciones</span>
+              <p class="entry__title">Pagas 4 suscripciones</p>
+              <p class="entry__detail">Netflix, Disney+, YouTube Premium y Spotify: $88.600 al mes, $1.063.200 al año.</p>
+            </li>
+            <li class="entry entry--good reveal">
+              <span class="entry__when">Meta</span>
+              <span class="entry__tag">Vas bien</span>
+              <p class="entry__title">Guitarra electroacústica</p>
+              <p class="entry__detail">Para llegar a la fecha necesitas $192.000 al mes y vienes apartando $200.000.</p>
+            </li>
+          </ol>
         </div>
       </section>
 
-      <section class="section" aria-labelledby="privado-titulo">
-        <div class="wrap row row--flip">
-          <div class="row__text">
-            <p class="eyebrow">Privado</p>
-            <h2 id="privado-titulo">Tus cuentas se quedan en tu teléfono.</h2>
-            <p>
-              No hay que crear cuenta ni conectar el banco. Todo se guarda en el dispositivo, puedes ocultar los montos para abrir la app en
-              público y sacar una copia de respaldo cuando quieras. De noche, el modo oscuro.
+      <section class="section" id="proyeccion" aria-labelledby="proy-titulo">
+        <div class="wrap proj">
+          <header class="proj__text reveal">
+            <p class="label">03 · Proyección</p>
+            <h2 id="proy-titulo">La proyección no es una <em>regla de tres</em>.</h2>
+            <p class="muted">
+              Si pagas el arriendo el día 2 y multiplicas por los días del mes, parece que vas a gastar más de dieciocho millones. Cuadre cuenta
+              una sola vez los pagos que se repiten y solo proyecta lo variable.
             </p>
-          </div>
-          <figure class="row__shot row__shot--phone">
-            <img src="img/movil-oscuro.webp" width="390" height="844" loading="lazy" alt="Cuadre en modo oscuro." />
+            <dl class="readout" aria-live="polite">
+              <div class="readout__row readout__row--naive">
+                <dt><span class="key"></span>Regla de tres</dt>
+                <dd data-out="naive">$0</dd>
+              </div>
+              <div class="readout__row readout__row--smart">
+                <dt><span class="key"></span>Cuadre</dt>
+                <dd data-out="smart">$0</dd>
+              </div>
+              <div class="readout__row readout__row--real">
+                <dt><span class="key"></span>Gasto real del mes</dt>
+                <dd data-out="real">$0</dd>
+              </div>
+            </dl>
+          </header>
+
+          <figure class="chart reveal">
+            <svg class="chart__svg" viewBox="0 0 760 360" role="img" aria-labelledby="chart-desc" data-svg>
+              <desc id="chart-desc">
+                Proyección del gasto del mes, calculada cada día. La regla de tres empieza muy por encima y baja poco a poco; la de Cuadre
+                queda cerca del gasto real desde los primeros días.
+              </desc>
+            </svg>
+            <label class="scrub">
+              <span class="scrub__label" data-out="dayLabel2">Día 20 de 31</span>
+              <input type="range" min="1" max="31" value="20" data-day aria-label="Día del mes para la proyección" />
+            </label>
           </figure>
         </div>
       </section>
 
-      <section class="closing">
-        <div class="wrap closing__inner">
-          <h2>Empieza con lo de hoy.</h2>
-          <p>Anota el próximo gasto y en una semana ya sabes en qué se te va.</p>
+      <section class="section section--shots" id="pantallas" aria-labelledby="pantallas-titulo">
+        <div class="wrap">
+          <header class="section__head section__head--row reveal">
+            <div>
+              <p class="label">04 · Pantallas</p>
+              <h2 id="pantallas-titulo">Hecha primero para el <em>celular</em>.</h2>
+            </div>
+            <div class="gallery-nav">
+              <button type="button" class="round" data-scroll="-1" aria-label="Pantalla anterior">←</button>
+              <button type="button" class="round" data-scroll="1" aria-label="Pantalla siguiente">→</button>
+            </div>
+          </header>
+        </div>
+        <div class="gallery" data-gallery tabindex="0" aria-label="Capturas de Cuadre">
+          <figure class="shot shot--phone">
+            <img src="img/movil-resumen.webp" width="390" height="844" loading="lazy" alt="Resumen del mes: te quedan $410.500." />
+            <figcaption><span>01</span> Resumen. La cifra que importa, el ritmo del mes y los avisos.</figcaption>
+          </figure>
+          <figure class="shot shot--phone">
+            <img src="img/movil-nuevo.webp" width="390" height="844" loading="lazy" alt="Formulario de nuevo gasto de $8.500 en café." />
+            <figcaption><span>02</span> Anotar un gasto. Valor, categoría y listo.</figcaption>
+          </figure>
+          <figure class="shot shot--wide">
+            <img src="img/presupuestos.webp" width="800" height="510" loading="lazy" alt="Presupuestos con la marca del día en cada barra." />
+            <figcaption><span>03</span> Presupuestos. Si la barra va delante de la marca, vas más rápido que el mes.</figcaption>
+          </figure>
+          <figure class="shot shot--wide">
+            <img src="img/importar.webp" width="800" height="610" loading="lazy" alt="Revisión de un extracto de Bancolombia ya clasificado." />
+            <figcaption><span>04</span> Extracto del banco. Sube el CSV y Cuadre clasifica cada movimiento.</figcaption>
+          </figure>
+          <figure class="shot shot--phone">
+            <img src="img/movil-oscuro.webp" width="390" height="844" loading="lazy" alt="Cuadre en modo oscuro." />
+            <figcaption><span>05</span> Modo oscuro, y un botón para ocultar los montos en público.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="closing" aria-labelledby="cierre-titulo">
+        <div class="wrap closing__inner reveal">
+          <h2 id="cierre-titulo">Empieza con el <em>próximo</em> gasto.</h2>
+          <p class="muted">En una semana ya sabes en qué se te va la plata. Sin crear cuenta: tus datos se quedan en tu celular.</p>
           <div class="actions">
-            <a class="btn btn--dark" href="app/">Abrir Cuadre</a>
-            <a class="btn" href="app/#ejemplo">Ver con datos de ejemplo</a>
+            <a class="btn btn--ink" href="app/">Abrir Cuadre</a>
+            <a class="btn btn--line" href="app/#ejemplo">Ver con datos de ejemplo</a>
           </div>
         </div>
       </section>
@@ -199,8 +223,8 @@
 
     <footer class="foot">
       <div class="wrap foot__inner">
-        <p>Cuadre es un proyecto personal de Orlando Castillo, hecho en Barranquilla.</p>
-        <a href="https://github.com/orlandocastillo-dev/cuadre">Código en GitHub</a>
+        <p>Cuadre · proyecto personal de Orlando Castillo · Son cálculos, no asesoría financiera.</p>
+        <a href="https://github.com/orlandocastillo-dev/cuadre">Código en GitHub ↗</a>
       </div>
     </footer>
   </body>

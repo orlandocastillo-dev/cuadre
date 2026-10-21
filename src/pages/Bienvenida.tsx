@@ -32,7 +32,7 @@ export function Bienvenida({ onDone }: { onDone: () => void }) {
           <span className="brand__mark" aria-hidden="true" />
           cuadre
         </p>
-        <h1>Sabe cuánto te queda, en qué se te va y qué puedes ajustar.</h1>
+        <h1>Cuánto te queda, en qué se te va y qué puedes ajustar.</h1>
         <p className="welcome__lead">
           Registra tus gastos en segundos, ponle límite a lo que más se te va y recibe avisos calculados con tu propio historial. Tus datos se
           quedan en este dispositivo.
