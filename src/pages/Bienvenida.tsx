@@ -4,7 +4,7 @@ import { today } from "../domain/dates";
 import { demoLedger, emptyLedger } from "../domain/seed";
 
 /** Primera vez: empezar con la app vacía o explorarla con datos de ejemplo. */
-export function Bienvenida({ onDone }: { onDone: () => void }) {
+export function Bienvenida({ onDone, onCuenta }: { onDone: () => void; onCuenta?: () => void }) {
   const [replace, state] = useReplaceAllMutation();
   const start = async (demo: boolean) => {
     await replace(demo ? demoLedger(today()) : emptyLedger());
@@ -34,8 +34,8 @@ export function Bienvenida({ onDone }: { onDone: () => void }) {
         </p>
         <h1>Cuánto te queda, en qué se te va y qué puedes ajustar.</h1>
         <p className="welcome__lead">
-          Registra tus gastos en segundos, ponle límite a lo que más se te va y recibe avisos calculados con tu propio historial. Tus datos se
-          quedan en este dispositivo.
+          Registra tus gastos en segundos, ponle límite a lo que más se te va y recibe avisos calculados con tu propio historial.
+          {onCuenta ? " Sin cuenta, tus datos se quedan en este dispositivo." : " Tus datos se quedan en este dispositivo."}
         </p>
         <div className="welcome__actions">
           <button type="button" className="btn btn--primary btn--big" onClick={() => start(false)} disabled={state.isLoading}>
@@ -45,6 +45,14 @@ export function Bienvenida({ onDone }: { onDone: () => void }) {
             Ver con datos de ejemplo
           </button>
         </div>
+        {onCuenta && (
+          <p className="muted">
+            ¿Quieres verlo en el celular y en el computador?{" "}
+            <button type="button" className="link" onClick={onCuenta}>
+              Crea una cuenta o entra
+            </button>
+          </p>
+        )}
       </div>
     </main>
   );

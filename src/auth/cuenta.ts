@@ -1,0 +1,148 @@
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { nube } from "../data/nube";
+
+export interface Usuario {
+  id: string;
+  email: string;
+  nombre: string;
+}
+
+export type Resultado = { ok: true } | { ok: false; mensaje: string; campo?: "nombre" | "email" | "clave" | "clave2" };
+
+export const CLAVE_MINIMA = 8;
+
+export function usuarioDe(s: Session | null): Usuario | null {
+  if (!s?.user) return null;
+  const nombre = String(s.user.user_metadata?.nombre ?? "").trim();
+  return { id: s.user.id, email: s.user.email ?? "", nombre: nombre || (s.user.email ?? "").split("@")[0] };
+}
+
+/** A dónde vuelven los enlaces del correo (confirmar cuenta, cambiar contraseña): esta misma app. */
+function regreso(): string {
+  return window.location.origin + window.location.pathname;
+}
+
+export const emailValido = (email: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email.trim());
+
+/** Qué tan fuerte es la contraseña, de 0 a 4, con un consejo. */
+export function fuerzaClave(clave: string): { nivel: 0 | 1 | 2 | 3 | 4; texto: string } {
+  if (!clave) return { nivel: 0, texto: "" };
+  if (clave.length < CLAVE_MINIMA) return { nivel: 1, texto: `Mínimo ${CLAVE_MINIMA} caracteres` };
+  let puntos = 0;
+  if (/[a-z]/.test(clave) && /[A-Z]/.test(clave)) puntos++;
+  if (/\d/.test(clave)) puntos++;
+  if (/[^A-Za-z0-9]/.test(clave)) puntos++;
+  if (clave.length >= 12) puntos++;
+  if (/^(.)\1+$/.test(clave) || /^(12345678|password|contraseña|qwerty)/i.test(clave)) puntos = 0;
+  if (puntos <= 1) return { nivel: 2, texto: "Aceptable. Mezcla números y mayúsculas para hacerla más segura" };
+  if (puntos === 2) return { nivel: 3, texto: "Buena" };
+  return { nivel: 4, texto: "Muy segura" };
+}
+
+/** Errores de Supabase Auth en palabras normales. */
+export function mensajeAuth(error: unknown): string {
+  const e = error as { message?: string; code?: string; status?: number };
+  const m = `${e?.code ?? ""} ${e?.message ?? ""}`;
+  if (/invalid_credentials|Invalid login credentials/i.test(m)) return "El correo o la contraseña no coinciden.";
+  if (/email_not_confirmed|Email not confirmed/i.test(m)) return "Todavía no has confirmado tu correo. Revisa tu bandeja de entrada (y la de spam).";
+  if (/user_already_exists|already registered/i.test(m)) return "Ya hay una cuenta con ese correo. Entra con tu contraseña o recupérala.";
+  if (/weak_password|Password should/i.test(m)) return `La contraseña es muy débil. Usa al menos ${CLAVE_MINIMA} caracteres, con letras y números.`;
+  if (/same_password|different from the old/i.test(m)) return "La nueva contraseña debe ser distinta de la anterior.";
+  if (/over_email_send_rate_limit|rate limit|too many/i.test(m) || e?.status === 429) return "Hiciste muchos intentos seguidos. Espera un minuto e inténtalo de nuevo.";
+  if (/email_address_invalid|invalid.*email/i.test(m)) return "Ese correo no parece válido.";
+  if (/signup_disabled|Signups not allowed/i.test(m)) return "Por ahora no se pueden crear cuentas nuevas.";
+  if (/fetch|network|Failed to/i.test(m)) return "No hay conexión. Revisa el internet e inténtalo de nuevo.";
+  return "Algo salió mal. Inténtalo de nuevo en un momento.";
+}
+
+async function hacer(fn: () => Promise<{ error: unknown }>): Promise<Resultado> {
+  try {
+    const { error } = await fn();
+    return error ? { ok: false, mensaje: mensajeAuth(error) } : { ok: true };
+  } catch (e) {
+    return { ok: false, mensaje: mensajeAuth(e) };
+  }
+}
+
+export async function sesionActual(): Promise<Session | null> {
+  const db = await nube();
+  const { data } = await db.auth.getSession();
+  return data.session;
+}
+
+export async function escucharSesion(cb: (evento: AuthChangeEvent, s: Session | null) => void): Promise<() => void> {
+  const db = await nube();
+  const { data } = db.auth.onAuthStateChange(cb);
+  return () => data.subscription.unsubscribe();
+}
+
+/**
+ * Crea la cuenta. Si el proyecto pide confirmar el correo, Supabase manda el enlace y la sesión
+ * se abre al tocarlo; si no, queda abierta de una vez.
+ */
+export async function crearCuenta(nombre: string, email: string, clave: string): Promise<Resultado & { confirmar?: boolean }> {
+  if (nombre.trim().length < 2) return { ok: false, campo: "nombre", mensaje: "Escribe tu nombre." };
+  if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
+  if (clave.length < CLAVE_MINIMA) return { ok: false, campo: "clave", mensaje: `La contraseña debe tener al menos ${CLAVE_MINIMA} caracteres.` };
+  try {
+    const db = await nube();
+    const { data, error } = await db.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password: clave,
+      options: { data: { nombre: nombre.trim() }, emailRedirectTo: regreso() },
+    });
+    if (error) return { ok: false, mensaje: mensajeAuth(error) };
+    // Con confirmación activada y un correo que ya existía, Supabase responde sin identidades.
+    if (data.user && data.user.identities?.length === 0) {
+      return { ok: false, campo: "email", mensaje: "Ya hay una cuenta con ese correo. Entra con tu contraseña o recupérala." };
+    }
+    return { ok: true, confirmar: !data.session };
+  } catch (e) {
+    return { ok: false, mensaje: mensajeAuth(e) };
+  }
+}
+
+export async function entrar(email: string, clave: string): Promise<Resultado> {
+  if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
+  if (!clave) return { ok: false, campo: "clave", mensaje: "Escribe tu contraseña." };
+  const db = await nube().catch(() => null);
+  if (!db) return { ok: false, mensaje: "La nube no está disponible." };
+  return hacer(() => db.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: clave }));
+}
+
+export async function reenviarConfirmacion(email: string): Promise<Resultado> {
+  const db = await nube();
+  return hacer(() => db.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: regreso() } }));
+}
+
+/** Manda el enlace para poner una contraseña nueva. Por seguridad no dice si el correo existe. */
+export async function recuperarClave(email: string): Promise<Resultado> {
+  if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
+  const db = await nube();
+  return hacer(() => db.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: regreso() }));
+}
+
+export async function cambiarClave(clave: string): Promise<Resultado> {
+  if (clave.length < CLAVE_MINIMA) return { ok: false, campo: "clave", mensaje: `La contraseña debe tener al menos ${CLAVE_MINIMA} caracteres.` };
+  const db = await nube();
+  return hacer(() => db.auth.updateUser({ password: clave }));
+}
+
+export async function cambiarNombre(nombre: string): Promise<Resultado> {
+  if (nombre.trim().length < 2) return { ok: false, campo: "nombre", mensaje: "Escribe tu nombre." };
+  const db = await nube();
+  return hacer(() => db.auth.updateUser({ data: { nombre: nombre.trim() } }));
+}
+
+export async function salir(): Promise<void> {
+  const db = await nube();
+  await db.auth.signOut({ scope: "local" });
+}
+
+/** Borra la cuenta y todos sus datos (función eliminar_mi_cuenta en la base). */
+export async function eliminarCuenta(): Promise<Resultado> {
+  const db = await nube();
+  const r = await hacer(async () => db.rpc("eliminar_mi_cuenta"));
+  if (r.ok) await db.auth.signOut({ scope: "local" }).catch(() => undefined);
+  return r;
+}

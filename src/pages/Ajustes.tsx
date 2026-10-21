@@ -5,6 +5,7 @@ import { today } from "../domain/dates";
 import { demoLedger, emptyLedger } from "../domain/seed";
 import type { Ledger } from "../domain/types";
 import { prefsChanged } from "../features/prefs";
+import { TuCuenta } from "./TuCuenta";
 
 export function Ajustes() {
   const dispatch = useAppDispatch();
@@ -41,6 +42,8 @@ export function Ajustes() {
         <h1>Ajustes</h1>
       </header>
 
+      <TuCuenta />
+
       <section className="settings">
         <div className="setting">
           <div>
@@ -69,7 +72,7 @@ export function Ajustes() {
             <p className="setting__title">Dónde están tus datos</p>
             <p className="muted small">
               {currentRepository()?.kind === "remoto"
-                ? "En tu cuenta, en la base de datos de Cuadre."
+                ? "En tu cuenta. Los ves igual en cualquier dispositivo donde entres."
                 : "En este navegador. Descarga un respaldo de vez en cuando, o si vas a cambiar de celular."}
             </p>
           </div>
@@ -94,7 +97,11 @@ export function Ajustes() {
         <div className="setting">
           <div>
             <p className="setting__title">Empezar de nuevo</p>
-            <p className="muted small">Borra todos los movimientos, metas y presupuestos de este dispositivo.</p>
+            <p className="muted small">
+              {currentRepository()?.kind === "remoto"
+                ? "Borra todos los movimientos, metas y presupuestos de tu cuenta, en todos tus dispositivos."
+                : "Borra todos los movimientos, metas y presupuestos de este dispositivo."}
+            </p>
           </div>
           <div className="setting__actions">
             <button

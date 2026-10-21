@@ -1730,3 +1730,329 @@ label.setting {
     border-left: 0;
   }
 }
+
+/* ---------- Cuenta: entrar, crear cuenta, recuperar ---------- */
+
+.acceso {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.5rem clamp(1.25rem, 5vw, 3rem);
+}
+.acceso__lado {
+  display: grid;
+  gap: 1.25rem;
+  align-content: center;
+}
+.acceso__titulo {
+  font-size: clamp(2.6rem, 5.6vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  max-width: 13ch;
+}
+.acceso__puntos {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+.acceso__puntos li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.acceso__puntos svg {
+  flex: none;
+  color: var(--in);
+}
+.acceso__tarjeta {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.4rem, 4vw, 2.2rem);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--line), 0 24px 48px -32px rgb(28 26 22 / 0.35);
+}
+.acceso__pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--bg);
+}
+.acceso__pestanas button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.acceso__pestanas button[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(28 26 22 / 0.12);
+}
+.acceso__form h2,
+.acceso__mensaje h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+.acceso__form .btn--big {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+.acceso__legal {
+  text-align: center;
+}
+.acceso__sin-cuenta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.acceso__mensaje {
+  display: grid;
+  justify-items: start;
+  gap: 0.9rem;
+}
+.acceso__mensaje .btn {
+  margin-top: 0.25rem;
+}
+.acceso__icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--in-wash);
+  color: var(--in);
+}
+.acceso__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.acceso__aviso {
+  padding: 0.75rem 1rem;
+  border-radius: var(--r-control);
+  background: var(--warn-wash);
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+.link--small {
+  font-size: 0.85rem;
+}
+.link--volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-self: start;
+  color: var(--muted);
+}
+
+.field__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.field__error {
+  color: var(--over);
+  font-size: 0.85rem;
+  font-weight: 550;
+}
+.field--error input {
+  border-color: var(--over);
+}
+
+/* Contraseña con ojo */
+.clave {
+  position: relative;
+}
+.clave input {
+  width: 100%;
+  padding-right: 3rem;
+}
+.clave__ojo {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.clave__ojo:hover {
+  color: var(--ink);
+}
+
+/* Qué tan segura es la contraseña */
+.fuerza {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: -0.4rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.fuerza__barra {
+  display: grid;
+  grid-template-columns: repeat(4, 22px);
+  gap: 4px;
+}
+.fuerza__barra i {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line-strong);
+}
+.fuerza[data-nivel="1"] .fuerza__barra i:nth-child(-n + 1) { background: var(--over); }
+.fuerza[data-nivel="2"] .fuerza__barra i:nth-child(-n + 2) { background: var(--warn); }
+.fuerza[data-nivel="3"] .fuerza__barra i:nth-child(-n + 3) { background: var(--in); }
+.fuerza[data-nivel="4"] .fuerza__barra i { background: var(--in); }
+
+.cargando {
+  animation: latido 1.4s ease-in-out infinite;
+}
+@keyframes latido {
+  50% { opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cargando { animation: none; }
+}
+
+.pasar__titulo {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.02;
+}
+
+/* ---------- Tu cuenta (Ajustes) ---------- */
+
+.cuenta {
+  margin-bottom: 1.25rem;
+}
+.cuenta__cab {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.cuenta__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-family: var(--display);
+  font-size: 1.5rem;
+}
+.cuenta__nombre {
+  font-weight: 650;
+  font-size: 1.05rem;
+}
+.cuenta__salir {
+  margin-left: auto;
+}
+.setting--col {
+  display: grid;
+  gap: 1rem;
+}
+.setting__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+.cuenta__form {
+  max-width: 420px;
+  padding: 1rem;
+  border-radius: var(--r-control);
+  background: var(--bg);
+}
+.cuenta__form--peligro {
+  background: var(--over-wash);
+}
+
+.side__cuenta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: var(--r-control);
+  color: var(--ink);
+  text-decoration: none;
+}
+.side__cuenta:hover {
+  background: var(--surface);
+}
+.side__cuenta .cuenta__avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 1.05rem;
+}
+.side__cuenta span:last-child {
+  display: grid;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.side__cuenta small {
+  overflow: hidden;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .acceso {
+    grid-template-columns: 1fr;
+    align-items: start;
+    align-content: start;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+  }
+  .acceso__titulo {
+    font-size: clamp(2.2rem, 9vw, 3rem);
+  }
+  .acceso__puntos {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .cuenta__cab {
+    flex-wrap: wrap;
+  }
+  .cuenta__salir {
+    margin-left: 0;
+  }
+}

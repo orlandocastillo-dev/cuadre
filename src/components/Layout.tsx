@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useCuenta } from "../auth/CuentaContext";
 import { prefsChanged } from "../features/prefs";
 import type { Kind, Transaction } from "../domain/types";
 import { Icon } from "./Icon";
@@ -32,6 +33,7 @@ export function Layout() {
   const dispatch = useAppDispatch();
   const { theme, hideAmounts } = useAppSelector((s) => s.prefs);
   const [sheet, setSheet] = useState<SheetState>({ key: 0, open: false });
+  const { usuario } = useCuenta();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -79,6 +81,17 @@ export function Layout() {
             <Icon name={hideAmounts ? "eyeOff" : "eye"} size={18} />
             {hideAmounts ? "Mostrar montos" : "Ocultar montos"}
           </button>
+          {usuario && (
+            <NavLink to="/ajustes" className="side__cuenta" aria-label={`Tu cuenta: ${usuario.nombre}`}>
+              <span className="cuenta__avatar" aria-hidden="true">
+                {(usuario.nombre || usuario.email).charAt(0).toUpperCase()}
+              </span>
+              <span>
+                {usuario.nombre}
+                <small>{usuario.email}</small>
+              </span>
+            </NavLink>
+          )}
         </aside>
 
         <div className="main-col">

@@ -44,27 +44,41 @@ Todo se calcula en `src/domain/insights.ts`, con funciones puras que se prueban 
 | | |
 | --- | --- |
 | Interfaz | React 19, TypeScript estricto, Vite, React Router 7 |
+| Cuentas y base de datos | Supabase Auth (PKCE) y PostgreSQL con Row Level Security |
 | Estado y datos | Redux Toolkit con **RTK Query** sobre un repositorio, con actualizaciones optimistas: el gasto aparece al instante y, si guardar falla, se revierte |
 | Gráficos | SVG hecho a mano. Ingresos y gastos con un solo eje, colores validados para daltonismo y tabla equivalente para lectores de pantalla |
 | Diseño | Instrument Serif para los títulos y Geist con cifras tabulares para el texto y los montos, fondo de papel cálido, tema claro y oscuro |
-| Calidad | Vitest y Testing Library (42 pruebas), oxlint, CI en GitHub Actions |
+| Calidad | Vitest y Testing Library (56 pruebas), oxlint, CI en GitHub Actions |
 
-### Lista para una base de datos
+### Cuentas de usuario y datos en Supabase
 
-Las pantallas no saben dónde se guardan los datos. Todo pasa por la interfaz `Repository` (`src/data/repository.ts`):
+Con Supabase configurado, cada persona crea su cuenta y sus movimientos quedan en la base de datos: los ve igual en el celular y en el computador. Sin configurarlo, la app funciona como siempre, con todo en el navegador.
 
-- Hoy la implementa `LocalRepository`, que guarda en el navegador.
-- Para tener cuentas de usuario y datos en un servidor basta con escribir otra implementación (Supabase, o una API propia con Node y PostgreSQL) y cambiar una línea en `src/main.tsx`.
+- **Cuentas:** crear cuenta con confirmación de correo, entrar, "¿olvidaste tu contraseña?" con enlace por correo, cambiar nombre y contraseña, cerrar sesión y eliminar la cuenta con todos sus datos. Medidor de seguridad de la contraseña y mensajes de error en español.
+- **Datos aislados por usuario con RLS:** cada fila lleva el `user_id` de su dueño y las políticas de Postgres solo dejan leer y cambiar lo propio. La llave pública puede estar en el navegador sin riesgo.
+- **Sin pasos a medias:** restaurar un respaldo o pasar los datos del celular a la cuenta se hace con una función de Postgres (`reemplazar_todo`) en una sola transacción.
+- **Pasar lo que ya tenías:** al entrar por primera vez en un equipo con datos guardados sin cuenta, la app ofrece subirlos.
+- **Sin cuenta también se puede:** "Usar sin cuenta" y "Ver con datos de ejemplo" siguen funcionando sin registrarse.
+
+Las pantallas no saben dónde se guardan los datos: todo pasa por la interfaz `Repository` (`src/data/repository.ts`), que cumplen `LocalRepository` (navegador) y `SupabaseRepository` (`src/data/supabase.ts`). El esquema, las políticas y las funciones están en `supabase/migrations/`.
+
+**Activarlo:**
+
+1. Crea un proyecto en [supabase.com](https://supabase.com) y corre `supabase/migrations/20261021000000_cuadre.sql` en el SQL Editor.
+2. En Authentication → URL Configuration, agrega la dirección de la app (por ejemplo `https://cuadre-lake.vercel.app/app/`) como Site URL y en Redirect URLs.
+3. Copia `.env.example` como `.env.local` (o crea las mismas variables en Vercel) con la URL y la llave anon del proyecto.
 
 ```
 src/
   domain/       lógica pura: dinero, fechas, totales, proyección, recomendaciones, suscripciones, metas, CSV
-  data/         Repository (la interfaz), LocalRepository y la API de RTK Query
+  auth/         cuentas: crear, entrar, recuperar contraseña, errores en español
+  data/         Repository (la interfaz), LocalRepository, SupabaseRepository y la API de RTK Query
   features/     preferencias (tema, ocultar montos)
   components/   Layout, hoja de nuevo movimiento, gráfico, filas, íconos
-  pages/        Resumen, Movimientos, Presupuestos, Metas, Importar, Ajustes, Bienvenida
+  pages/        Resumen, Movimientos, Presupuestos, Metas, Importar, Ajustes, Bienvenida, Acceso, Tu cuenta
 landing/        página de presentación (HTML y CSS), se copia a la raíz del sitio al compilar
-tests/          dominio y flujos completos de la app
+supabase/       tablas, políticas RLS y funciones de Postgres
+tests/          dominio, flujos completos de la app y de las cuentas (con un Supabase falso en memoria)
 ```
 
 ## Correr el proyecto

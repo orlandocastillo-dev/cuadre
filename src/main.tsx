@@ -20,9 +20,10 @@ import { Movimientos } from "./pages/Movimientos";
 import { Presupuestos } from "./pages/Presupuestos";
 import { Resumen } from "./pages/Resumen";
 
-// Aquí se elige dónde viven los datos. Con un backend, se cambia esta línea por su repositorio.
-const repository = new LocalRepository();
-setRepository(repository);
+// Sin cuenta, los datos viven en el navegador. Con Supabase configurado, App cambia al repositorio
+// de la cuenta cuando hay sesión (ver src/App.tsx).
+const local = new LocalRepository();
+setRepository(local);
 
 const store = makeStore(loadPrefs());
 
@@ -45,7 +46,7 @@ const router = createHashRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <App router={router} firstRun={!repository.hasData()} />
+      <App router={router} local={local} />
     </Provider>
   </StrictMode>,
 );
