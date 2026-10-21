@@ -1587,3 +1587,14 @@ label.setting {
     transition: none !important;
   }
 }
+
+.welcome__back {
+  justify-self: start;
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.welcome__back:hover {
+  color: var(--ink);
+}

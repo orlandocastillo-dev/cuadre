@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useReplaceAllMutation } from "../data/ledgerApi";
 import { today } from "../domain/dates";
 import { demoLedger, emptyLedger } from "../domain/seed";
@@ -9,9 +10,24 @@ export function Bienvenida({ onDone }: { onDone: () => void }) {
     await replace(demo ? demoLedger(today()) : emptyLedger());
     onDone();
   };
+
+  // "Ver con datos de ejemplo" en la presentación abre app/#ejemplo: entra directo con el ejemplo.
+  const auto = useRef(false);
+  useEffect(() => {
+    if (auto.current || window.location.hash !== "#ejemplo") return;
+    auto.current = true;
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    void start(true);
+  });
   return (
     <main className="welcome">
       <div className="welcome__inner">
+        {/* La app vive en /app/ y la presentación en la raíz; en el archivo portátil no hay a dónde volver. */}
+        {window.location.protocol !== "file:" && (
+          <a className="welcome__back" href="../">
+            ‹ Volver a la página de Cuadre
+          </a>
+        )}
         <p className="brand brand--big">
           <span className="brand__mark" aria-hidden="true" />
           cuadre

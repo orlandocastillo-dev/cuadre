@@ -2,6 +2,8 @@
 
 App web para llevar las cuentas del mes y recibir recomendaciones calculadas con tu propio historial, no con reglas genéricas. Por ejemplo: "A este ritmo te pasas en mercado", "14 gastos pequeños en café suman $103.600" o "Pagas 4 suscripciones: $88.600 al mes". Está pensada primero para el celular y funciona igual en el computador.
 
+**En vivo:** https://cuadre-lake.vercel.app. La página de presentación está en la raíz (HTML y CSS sin frameworks, en `landing/`) y la app en `/app/`. "Ver con datos de ejemplo" abre la app ya cargada con tres meses de movimientos.
+
 ![Resumen en el computador](docs/captura-resumen.png)
 
 | Resumen en el celular | Registrar un gasto | Modo oscuro |
@@ -61,6 +63,7 @@ src/
   features/     preferencias (tema, ocultar montos)
   components/   Layout, hoja de nuevo movimiento, gráfico, filas, íconos
   pages/        Resumen, Movimientos, Presupuestos, Metas, Importar, Ajustes, Bienvenida
+landing/        página de presentación (HTML y CSS), se copia a la raíz del sitio al compilar
 tests/          dominio y flujos completos de la app
 ```
 
@@ -70,7 +73,7 @@ tests/          dominio y flujos completos de la app
 npm install
 npm run dev        # http://localhost:5173
 npm test
-npm run build
+npm run build      # dist/: la presentación en la raíz y la app en dist/app/
 ```
 
 En Windows con PowerShell usa `npm.cmd` en lugar de `npm`.

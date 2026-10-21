@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuadre | Sabe cuánto te queda antes de que se acabe el mes</title>
+    <meta
+      name="description"
+      content="Cuadre lleva tus gastos e ingresos, te marca el ritmo del mes y te avisa cuando algo se sale de lo normal, con tus propios números."
+    />
+    <meta property="og:title" content="Cuadre, finanzas personales" />
+    <meta property="og:description" content="Cuánto te queda, en qué se te va y qué puedes ajustar." />
+    <meta property="og:image" content="img/movil-resumen.webp" />
+    <meta name="theme-color" content="#f3f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1412" media="(prefers-color-scheme: dark)" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2314201b'/%3E%3Cg transform='rotate(-12 16 16)'%3E%3Crect x='9' y='9' width='14' height='7' rx='2' fill='%2312865f'/%3E%3Crect x='9' y='16' width='14' height='7' rx='2' fill='%236a5bd0'/%3E%3C/g%3E%3C/svg%3E"
+    />
+    <link rel="preload" href="fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#contenido">Ir al contenido</a>
+
+    <header class="top">
+      <div class="wrap top__inner">
+        <a class="brand" href="./" aria-label="Cuadre, inicio">
+          <span class="brand__mark" aria-hidden="true"></span>
+          cuadre
+        </a>
+        <nav class="top__nav" aria-label="Secciones">
+          <a href="#avisos">Avisos</a>
+          <a href="#como">Cómo funciona</a>
+          <a href="#calculo">Cómo calcula</a>
+        </nav>
+        <a class="btn btn--dark btn--small" href="app/">Abrir Cuadre</a>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <section class="hero">
+        <div class="wrap hero__grid">
+          <div class="hero__copy">
+            <h1>Sabe cuánto te queda antes de que se acabe el mes.</h1>
+            <p class="lead">
+              Cuadre lleva tus gastos e ingresos, te marca el ritmo del mes y te avisa cuando algo se está saliendo de lo normal. Con tus
+              números, no con reglas genéricas.
+            </p>
+            <div class="actions">
+              <a class="btn btn--dark" href="app/">Empezar</a>
+              <a class="btn" href="app/#ejemplo">Verla con datos de ejemplo</a>
+            </div>
+            <p class="fine">Gratis y sin crear cuenta. Funciona en el celular y en el computador.</p>
+          </div>
+          <figure class="hero__shot">
+            <img
+              src="img/movil-resumen.webp"
+              width="390"
+              height="844"
+              alt="Resumen del mes en Cuadre: te quedan $410.500, con la barra de ritmo y las primeras recomendaciones."
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="avisos" aria-labelledby="avisos-titulo">
+        <div class="wrap">
+          <p class="eyebrow">Lo que te dice</p>
+          <h2 id="avisos-titulo">Avisos que salen de tu historial, en palabras normales.</h2>
+          <ul class="notes">
+            <li class="note note--over">
+              <strong>Te pasaste en domicilios y restaurantes.</strong>
+              <span>Llevas $329.000 de $220.000 y aún queda mes.</span>
+            </li>
+            <li class="note note--warn">
+              <strong>A este ritmo te pasas en mercado.</strong>
+              <span>Vas en $474.200 y terminarías cerca de $636.000, $36.000 más de lo que presupuestaste.</span>
+            </li>
+            <li class="note">
+              <strong>14 gastos pequeños en café y antojos.</strong>
+              <span>Suman $103.600 este mes. A ese ritmo serían unos $1.930.000 al año.</span>
+            </li>
+            <li class="note">
+              <strong>Pagas 4 suscripciones cada mes.</strong>
+              <span>Netflix, Disney+, YouTube Premium y Spotify: $88.600 al mes, $1.063.200 al año.</span>
+            </li>
+            <li class="note note--good">
+              <strong>Vas bien con la guitarra electroacústica.</strong>
+              <span>Para llegar a la fecha necesitas $192.000 al mes y vienes apartando $200.000.</span>
+            </li>
+          </ul>
+          <p class="fine">Ejemplos con los datos de muestra de la app. Son cálculos, no asesoría financiera.</p>
+        </div>
+      </section>
+
+      <section class="section section--rows" id="como" aria-labelledby="como-titulo">
+        <div class="wrap">
+          <p class="eyebrow">Cómo funciona</p>
+          <h2 id="como-titulo" class="visually-hidden">Cómo funciona</h2>
+
+          <article class="row">
+            <div class="row__text">
+              <h3>Anotar un gasto toma cinco segundos.</h3>
+              <p>
+                Escribes el valor, tocas la categoría y listo. Los puntos de miles salen solos mientras escribes, la fecha arranca en hoy y la
+                cuenta es la última que usaste: Efectivo, Bancolombia o Nequi.
+              </p>
+            </div>
+            <figure class="row__shot row__shot--phone">
+              <img src="img/movil-nuevo.webp" width="390" height="844" loading="lazy" alt="Formulario de nuevo gasto con el valor $8.500 y la categoría Café y antojos." />
+            </figure>
+          </article>
+
+          <article class="row">
+            <div class="row__text">
+              <h3>Un límite por categoría, y el aviso antes de pasarte.</h3>
+              <p>
+                Cada presupuesto muestra una marca con el día de hoy. Si la barra va delante de la marca, vas gastando más rápido que el mes.
+                Para lo que no tiene límite, Cuadre te sugiere uno según lo que sueles gastar.
+              </p>
+            </div>
+            <figure class="row__shot">
+              <img src="img/presupuestos.webp" width="800" height="510" loading="lazy" alt="Presupuestos de mercado, transporte, domicilios y café, con la marca del día en cada barra." />
+            </figure>
+          </article>
+
+          <article class="row">
+            <div class="row__text">
+              <h3>Sube el extracto del banco y Cuadre lo clasifica.</h3>
+              <p>
+                Acepta el CSV de Bancolombia, Nequi, Davivienda y otros. Reconoce las columnas, pone cada movimiento en su categoría y marca los
+                que ya tenías. Si corriges una, la recuerda para la próxima.
+              </p>
+            </div>
+            <figure class="row__shot">
+              <img src="img/importar.webp" width="800" height="610" loading="lazy" alt="Revisión de un extracto importado: Rappi en domicilios, Air-e en servicios, Olímpica en mercado." />
+            </figure>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--calc" id="calculo" aria-labelledby="calculo-titulo">
+        <div class="wrap calc">
+          <div>
+            <p class="eyebrow">Cómo calcula</p>
+            <h2 id="calculo-titulo">La proyección no es una regla de tres.</h2>
+            <p>
+              Si pagas el arriendo el día 2 y la app multiplica por los días del mes, te diría que vas a gastar más de trece millones. Cuadre
+              detecta los pagos que se repiten cada mes y los cuenta una sola vez. Solo lo variable, como el mercado o los domicilios, se proyecta
+              según los días que han pasado.
+            </p>
+          </div>
+          <table class="calc__table">
+            <caption>
+              Arriendo de $850.000 pagado el día 2 de 31
+            </caption>
+            <tbody>
+              <tr>
+                <th scope="row">Regla de tres</th>
+                <td>$13.175.000</td>
+              </tr>
+              <tr class="is-good">
+                <th scope="row">Cuadre</th>
+                <td>$850.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="privado-titulo">
+        <div class="wrap row row--flip">
+          <div class="row__text">
+            <p class="eyebrow">Privado</p>
+            <h2 id="privado-titulo">Tus cuentas se quedan en tu teléfono.</h2>
+            <p>
+              No hay que crear cuenta ni conectar el banco. Todo se guarda en el dispositivo, puedes ocultar los montos para abrir la app en
+              público y sacar una copia de respaldo cuando quieras. De noche, el modo oscuro.
+            </p>
+          </div>
+          <figure class="row__shot row__shot--phone">
+            <img src="img/movil-oscuro.webp" width="390" height="844" loading="lazy" alt="Cuadre en modo oscuro." />
+          </figure>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="wrap closing__inner">
+          <h2>Empieza con lo de hoy.</h2>
+          <p>Anota el próximo gasto y en una semana ya sabes en qué se te va.</p>
+          <div class="actions">
+            <a class="btn btn--dark" href="app/">Abrir Cuadre</a>
+            <a class="btn" href="app/#ejemplo">Ver con datos de ejemplo</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot__inner">
+        <p>Cuadre es un proyecto personal de Orlando Castillo, hecho en Barranquilla.</p>
+        <a href="https://github.com/orlandocastillo-dev/cuadre">Código en GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>
