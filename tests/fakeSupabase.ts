@@ -29,6 +29,10 @@ export function fakeSupabase(opciones: { confirmarCorreo?: boolean } = {}) {
   let sesion: { user: { id: string; email: string; user_metadata: { nombre: string } } } | null = null;
   const oyentes = new Set<(e: Evento, s: typeof sesion) => void>();
   const llamadas: string[] = [];
+  const fallos = new Map<string, number>();
+  /** Lo que la app mandó como user_metadata al crear cada cuenta. */
+  const metas: Record<string, unknown>[] = [];
+  const bloqueados = new Map<string, number>();
 
   const avisar = (e: Evento) => oyentes.forEach((f) => f(e, sesion));
   const abrir = (u: UsuarioFalso) => {
@@ -105,8 +109,9 @@ export function fakeSupabase(opciones: { confirmarCorreo?: boolean } = {}) {
         queueMicrotask(() => cb("INITIAL_SESSION", sesion));
         return { data: { subscription: { unsubscribe: () => oyentes.delete(cb) } } };
       },
-      async signUp({ email, password, options }: { email: string; password: string; options?: { data?: { nombre?: string } } }) {
+      async signUp({ email, password, options }: { email: string; password: string; options?: { data?: { nombre?: string; [k: string]: unknown } } }) {
         llamadas.push("signUp");
+        metas.push({ ...options?.data });
         if (usuarios.some((u) => u.email === email)) {
           return opciones.confirmarCorreo
             ? { data: { user: { id: "x", identities: [] }, session: null }, error: null }
@@ -164,8 +169,22 @@ export function fakeSupabase(opciones: { confirmarCorreo?: boolean } = {}) {
       },
     },
     from: consulta,
-    async rpc(nombre: string, args?: { datos?: Record<string, Fila[]> }) {
+    async rpc(nombre: string, args?: { datos?: Record<string, Fila[]>; correo?: string }) {
       llamadas.push(`rpc:${nombre}`);
+      // Bloqueo por intentos fallidos (lo mismo que hace la base: 5 fallos → 15 minutos).
+      if (nombre === "bloqueo_restante") return { data: bloqueados.get(String((args as { correo?: string })?.correo)) ?? 0, error: null };
+      if (nombre === "registrar_fallo") {
+        const c = String((args as { correo?: string })?.correo);
+        const n = (fallos.get(c) ?? 0) + 1;
+        fallos.set(c, n);
+        if (n >= 5) {
+          fallos.set(c, 0);
+          bloqueados.set(c, 900);
+          return { data: 900, error: null };
+        }
+        return { data: 0, error: null };
+      }
+      if (nombre === "login_exitoso") return { data: null, error: null };
       const yo = uid();
       if (!yo) return { data: null, error: err("42501", "Hace falta iniciar sesión") };
       if (nombre === "eliminar_mi_cuenta") {
@@ -197,6 +216,7 @@ export function fakeSupabase(opciones: { confirmarCorreo?: boolean } = {}) {
     tablas,
     usuarios,
     llamadas,
+    metas,
     /** Simula tocar el enlace del correo de confirmación. */
     confirmar(email: string) {
       const u = usuarios.find((x) => x.email === email)!;

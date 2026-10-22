@@ -2093,3 +2093,33 @@ input.codigo::placeholder {
   background: var(--surface);
   color: var(--over);
 }
+
+/* Aceptar términos y privacidad al crear la cuenta */
+.acepto {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+.acepto input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.1rem;
+  accent-color: var(--in);
+}
+.acepto a {
+  color: var(--ink);
+}
+.acepto--error {
+  color: var(--ink);
+}
+.acceso__docs {
+  text-align: center;
+}
+.acceso__docs a {
+  color: inherit;
+}

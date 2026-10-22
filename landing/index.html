@@ -2,10 +2,7 @@
 <html lang="es-CO">
   <head>
     <meta charset="UTF-8" />
-    <script>
-      // Si el botón del correo abrió la presentación en vez de la app, se pasa a la app con el mismo enlace.
-      if (/[?&](token_hash|code|error_description)=/.test(location.search)) location.replace("app/" + location.search);
-    </script>
+    <script src="inicio.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cuadre | ¿Cuánto te queda para fin de mes?</title>
     <meta
@@ -24,9 +21,6 @@
     <link rel="preload" href="fonts/serif.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="styles.css" />
-    <script>
-      document.documentElement.classList.add("js");
-    </script>
     <script type="module" src="main.js"></script>
   </head>
   <body>
@@ -228,7 +222,11 @@
     <footer class="foot">
       <div class="wrap foot__inner">
         <p>Cuadre · proyecto personal de Orlando Castillo · Son cálculos, no asesoría financiera.</p>
-        <a href="https://github.com/orlandocastillo-dev/cuadre">Código en GitHub ↗</a>
+        <nav class="foot__links" aria-label="Legal">
+          <a href="privacidad.html">Privacidad</a>
+          <a href="terminos.html">Términos</a>
+          <a href="https://github.com/orlandocastillo-dev/cuadre">Código en GitHub ↗</a>
+        </nav>
       </div>
     </footer>
   </body>

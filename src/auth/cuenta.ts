@@ -7,9 +7,12 @@ export interface Usuario {
   nombre: string;
 }
 
-export type Resultado = { ok: true } | { ok: false; mensaje: string; campo?: "nombre" | "email" | "clave" | "clave2" | "codigo" };
+export type Resultado = { ok: true } | { ok: false; mensaje: string; campo?: "nombre" | "email" | "clave" | "clave2" | "codigo" | "acepta" | "actual"; bloqueo?: number };
 
 export const CLAVE_MINIMA = 8;
+
+/** Fecha de la versión vigente de Privacidad y Términos (landing/privacidad.html y terminos.html). */
+export const VERSION_LEGAL = "2026-10-21";
 
 export function usuarioDe(s: Session | null): Usuario | null {
   if (!s?.user) return null;
@@ -82,16 +85,18 @@ export async function escucharSesion(cb: (evento: AuthChangeEvent, s: Session | 
  * Crea la cuenta. Si el proyecto pide confirmar el correo, Supabase manda un código y un enlace;
  * la sesión se abre al escribir el código o al tocar el enlace. Si no, queda abierta de una vez.
  */
-export async function crearCuenta(nombre: string, email: string, clave: string): Promise<Resultado & { confirmar?: boolean }> {
+export async function crearCuenta(nombre: string, email: string, clave: string, acepta = false): Promise<Resultado & { confirmar?: boolean }> {
   if (nombre.trim().length < 2) return { ok: false, campo: "nombre", mensaje: "Escribe tu nombre." };
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
   if (clave.length < CLAVE_MINIMA) return { ok: false, campo: "clave", mensaje: `La contraseña debe tener al menos ${CLAVE_MINIMA} caracteres.` };
+  if (!acepta) return { ok: false, campo: "acepta", mensaje: "Para crear la cuenta necesitas aceptar los términos y la política de privacidad." };
   try {
     const db = await nube();
     const { data, error } = await db.auth.signUp({
       email: email.trim().toLowerCase(),
       password: clave,
-      options: { data: { nombre: nombre.trim() }, emailRedirectTo: regreso() },
+      // La aceptación queda guardada en la cuenta, con la versión y la fecha (prueba de la autorización, Ley 1581).
+      options: { data: { nombre: nombre.trim(), acepto_legal: { version: VERSION_LEGAL, fecha: new Date().toISOString() } }, emailRedirectTo: regreso() },
     });
     if (error) return { ok: false, mensaje: mensajeAuth(error) };
     // Con confirmación activada y un correo que ya existía, Supabase responde sin identidades.
@@ -104,12 +109,45 @@ export async function crearCuenta(nombre: string, email: string, clave: string):
   }
 }
 
+/** "15 minutos", "1 hora", "2 horas"… */
+export function duracion(segundos: number): string {
+  const min = Math.max(1, Math.ceil(segundos / 60));
+  if (min < 60) return min === 1 ? "1 minuto" : `${min} minutos`;
+  const h = Math.ceil(min / 60);
+  return h === 1 ? "1 hora" : `${h} horas`;
+}
+
+const mensajeBloqueo = (seg: number) =>
+  `Por seguridad, bloqueamos la entrada con este correo durante ${duracion(seg)} por varios intentos fallidos. Si olvidaste la contraseña, puedes recuperarla.`;
+
+/**
+ * Entrar con correo y contraseña. Tras 5 contraseñas equivocadas seguidas, la base bloquea ese correo
+ * (15 min, luego 30, 60…). Si las funciones de bloqueo no responden, se entra igual: Supabase además
+ * limita los intentos por dirección IP.
+ */
 export async function entrar(email: string, clave: string): Promise<Resultado> {
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
   if (!clave) return { ok: false, campo: "clave", mensaje: "Escribe tu contraseña." };
   const db = await nube().catch(() => null);
   if (!db) return { ok: false, mensaje: "La nube no está disponible." };
-  return hacer(() => db.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: clave }));
+  const correo = email.trim().toLowerCase();
+  try {
+    const { data: falta } = await db.rpc("bloqueo_restante", { correo });
+    if (typeof falta === "number" && falta > 0) return { ok: false, mensaje: mensajeBloqueo(falta), bloqueo: falta };
+
+    const { error } = await db.auth.signInWithPassword({ email: correo, password: clave });
+    if (!error) {
+      void db.rpc("login_exitoso");
+      return { ok: true };
+    }
+    if (/invalid_credentials|Invalid login credentials/i.test(`${(error as { code?: string }).code ?? ""} ${error.message}`)) {
+      const { data: bloqueo } = await db.rpc("registrar_fallo", { correo });
+      if (typeof bloqueo === "number" && bloqueo > 0) return { ok: false, mensaje: mensajeBloqueo(bloqueo), bloqueo };
+    }
+    return { ok: false, mensaje: mensajeAuth(error) };
+  } catch (e) {
+    return { ok: false, mensaje: mensajeAuth(e) };
+  }
 }
 
 /** Lo que trae el correo: un código de 6 dígitos (o de hasta 10 si el proyecto lo pide así). */
@@ -153,10 +191,28 @@ export async function recuperarClave(email: string): Promise<Resultado> {
   return hacer(() => db.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: regreso() }));
 }
 
-export async function cambiarClave(clave: string): Promise<Resultado> {
+/**
+ * Pone una contraseña nueva. Desde "Tu cuenta" se pide la actual (si alguien encuentra la sesión
+ * abierta, no puede cambiarla); desde el enlace de "olvidé mi contraseña" no hace falta.
+ */
+export async function cambiarClave(clave: string, actual?: string): Promise<Resultado> {
+  if (actual !== undefined && !actual) return { ok: false, campo: "actual", mensaje: "Escribe tu contraseña actual." };
   if (clave.length < CLAVE_MINIMA) return { ok: false, campo: "clave", mensaje: `La contraseña debe tener al menos ${CLAVE_MINIMA} caracteres.` };
   const db = await nube();
+  if (actual !== undefined) {
+    const { data } = await db.auth.getSession();
+    const email = data.session?.user.email;
+    if (!email) return { ok: false, mensaje: "Tu sesión se cerró. Vuelve a entrar." };
+    const r = await entrar(email, actual);
+    if (!r.ok) return /no coinciden/.test(r.mensaje) ? { ok: false, campo: "actual", mensaje: "La contraseña actual no es correcta." } : r;
+  }
   return hacer(() => db.auth.updateUser({ password: clave }));
+}
+
+/** Cierra la sesión en todos los celulares y computadores donde esté abierta, incluido este. */
+export async function salirDeTodo(): Promise<Resultado> {
+  const db = await nube();
+  return hacer(() => db.auth.signOut({ scope: "global" }));
 }
 
 export async function cambiarNombre(nombre: string): Promise<Resultado> {

@@ -96,6 +96,7 @@ describe("cuentas con Supabase", () => {
     await escribir(/^Correo/, "orlando@correo.co");
     await escribir(/^Contraseña$/, "Cuadre2026!");
     expect(screen.getByText("Muy segura")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
 
     expect((await enApp()).length).toBeGreaterThan(0);
@@ -121,6 +122,7 @@ describe("cuentas con Supabase", () => {
     await escribir(/Tu nombre/, "Orlando");
     await escribir(/^Correo/, "orlando@correo");
     await escribir(/^Contraseña$/, "corta");
+    await userEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByText("Ese correo no parece válido.")).toBeInTheDocument();
     expect(fake.llamadas).not.toContain("signUp");
@@ -132,6 +134,7 @@ describe("cuentas con Supabase", () => {
     await escribir(/Tu nombre/, "Ana");
     await escribir(/^Correo/, "ana@correo.co");
     await escribir(/^Contraseña$/, "clave-segura-1");
+    await userEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByRole("heading", { name: "Confirma tu correo" })).toBeInTheDocument();
     expect(screen.getByText("ana@correo.co")).toBeInTheDocument();
@@ -147,6 +150,7 @@ describe("cuentas con Supabase", () => {
     await escribir(/Tu nombre/, "Ana");
     await escribir(/^Correo/, "ana@correo.co");
     await escribir(/^Contraseña$/, "clave-segura-1");
+    await userEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
     await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
     expect(await screen.findByRole("heading", { name: "Confirma tu correo" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Confirmar" })).toBeDisabled();
@@ -194,6 +198,41 @@ describe("cuentas con Supabase", () => {
     await escribir(/^Contraseña/, "la-buena-123");
     await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
     expect((await enApp()).length).toBeGreaterThan(0);
+  });
+
+  it("no deja crear la cuenta sin aceptar términos y privacidad, y guarda la aceptación", async () => {
+    montar();
+    await userEvent.click(await screen.findByRole("tab", { name: "Crear cuenta" }));
+    await escribir(/Tu nombre/, "Ana");
+    await escribir(/^Correo/, "ana@correo.co");
+    await escribir(/^Contraseña$/, "clave-segura-1");
+    await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("necesitas aceptar los términos");
+    expect(fake.llamadas).not.toContain("signUp");
+    expect(screen.getByRole("link", { name: "Política de privacidad" })).toHaveAttribute("href", "../privacidad.html");
+
+    await userEvent.click(screen.getByRole("checkbox", { name: /Acepto los Términos/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    expect((await enApp()).length).toBeGreaterThan(0);
+    expect(fake.metas[0]).toMatchObject({ acepto_legal: { version: "2026-10-21" } });
+  });
+
+  it("después de 5 contraseñas equivocadas bloquea la entrada con ese correo", async () => {
+    montar();
+    fake.crearUsuario("orlando@correo.co", "la-buena-123");
+    await pantallaEntrar();
+    await escribir(/^Correo/, "orlando@correo.co");
+    for (let i = 0; i < 4; i++) {
+      await escribir(/^Contraseña/, `mala-${i}-clave`);
+      await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
+      await screen.findByText("El correo o la contraseña no coinciden.");
+    }
+    await escribir(/^Contraseña/, "mala-final-1");
+    await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("bloqueamos la entrada con este correo durante 15 minutos");
+    expect(screen.getByRole("button", { name: /Intenta de nuevo en 1[45]:/ })).toBeDisabled();
+    // Ni con la contraseña buena entra mientras dure el bloqueo.
+    expect(fake.llamadas.filter((l) => l === "signIn")).toHaveLength(5);
   });
 
   it("recuperar la contraseña con el código del correo deja poner una nueva", async () => {
@@ -276,6 +315,45 @@ describe("cuentas con Supabase", () => {
     await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
     await enApp();
     await userEvent.click(screen.getAllByRole("button", { name: "Cerrar sesión" })[0]);
+    expect(await pantallaEntrar()).toBeInTheDocument();
+  });
+
+  it("cambiar la contraseña pide la actual", async () => {
+    const { router } = montar();
+    fake.crearUsuario("orlando@correo.co", "la-buena-123", "Orlando");
+    await pantallaEntrar();
+    await escribir(/^Correo/, "orlando@correo.co");
+    await escribir(/^Contraseña/, "la-buena-123");
+    await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
+    await enApp();
+    await router.navigate("/ajustes");
+    const cuenta = await screen.findByRole("region", { name: "Tu cuenta" });
+    await userEvent.click(within(cuenta).getAllByRole("button", { name: "Cambiar" })[1]);
+    await userEvent.type(within(cuenta).getByLabelText("Contraseña actual"), "no-es-esta-1");
+    await userEvent.type(within(cuenta).getByLabelText("Contraseña nueva"), "nueva-clave-2026");
+    await userEvent.type(within(cuenta).getByLabelText("Repítela"), "nueva-clave-2026");
+    await userEvent.click(within(cuenta).getByRole("button", { name: "Guardar contraseña" }));
+    expect(await within(cuenta).findByText("La contraseña actual no es correcta.")).toBeInTheDocument();
+    expect(fake.usuarios[0].clave).toBe("la-buena-123");
+
+    await userEvent.clear(within(cuenta).getByLabelText("Contraseña actual"));
+    await userEvent.type(within(cuenta).getByLabelText("Contraseña actual"), "la-buena-123");
+    await userEvent.click(within(cuenta).getByRole("button", { name: "Guardar contraseña" }));
+    expect(await within(cuenta).findByText("Listo, tu contraseña quedó cambiada.")).toBeInTheDocument();
+    expect(fake.usuarios[0].clave).toBe("nueva-clave-2026");
+  });
+
+  it("cerrar la sesión en todos los dispositivos vuelve a la pantalla de entrar", async () => {
+    const { router } = montar();
+    fake.crearUsuario("orlando@correo.co", "la-buena-123", "Orlando");
+    await pantallaEntrar();
+    await escribir(/^Correo/, "orlando@correo.co");
+    await escribir(/^Contraseña/, "la-buena-123");
+    await userEvent.click(screen.getByRole("button", { name: "Entrar" }));
+    await enApp();
+    await router.navigate("/ajustes");
+    const cuenta = await screen.findByRole("region", { name: "Tu cuenta" });
+    await userEvent.click(within(cuenta).getByRole("button", { name: "Cerrar en todos" }));
     expect(await pantallaEntrar()).toBeInTheDocument();
   });
 

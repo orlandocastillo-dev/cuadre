@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { cambiarClave, cambiarNombre, CLAVE_MINIMA, eliminarCuenta, fuerzaClave, type Resultado } from "../auth/cuenta";
+import { cambiarClave, cambiarNombre, CLAVE_MINIMA, eliminarCuenta, fuerzaClave, salirDeTodo, type Resultado } from "../auth/cuenta";
 import { useCuenta } from "../auth/CuentaContext";
 import { ClaveInput, Campo } from "./Acceso";
 
@@ -94,6 +94,26 @@ export function TuCuenta() {
       <div className="setting setting--col">
         <div className="setting__fila">
           <div>
+            <p className="setting__title">Sesiones abiertas</p>
+            <p className="muted small">Si perdiste el celular o entraste en un computador ajeno, cierra la sesión en todos lados.</p>
+          </div>
+          <button
+            type="button"
+            className="btn btn--small"
+            onClick={async () => {
+              const r = await salirDeTodo();
+              if (!r.ok) setMensaje(r.mensaje);
+              // Si sale bien, la app vuelve sola a la pantalla de entrar.
+            }}
+          >
+            Cerrar en todos
+          </button>
+        </div>
+      </div>
+
+      <div className="setting setting--col">
+        <div className="setting__fila">
+          <div>
             <p className="setting__title">Eliminar la cuenta</p>
             <p className="muted small">Borra la cuenta y todos sus movimientos, metas y presupuestos. No se puede deshacer.</p>
           </div>
@@ -109,6 +129,10 @@ export function TuCuenta() {
           {mensaje}
         </p>
       )}
+
+      <p className="muted small cuenta__docs">
+        Cómo cuidamos tus datos: <a href="../privacidad.html">Política de privacidad</a> · <a href="../terminos.html">Términos</a>
+      </p>
     </section>
   );
 }
@@ -137,6 +161,7 @@ function FormNombre({ actual, onListo }: { actual: string; onListo: (n: string) 
 }
 
 function FormClave({ onListo }: { onListo: () => void }) {
+  const [actual, setActual] = useState("");
   const [clave, setClave] = useState("");
   const [clave2, setClave2] = useState("");
   const [r, setR] = useState<Resultado | null>(null);
@@ -146,15 +171,18 @@ function FormClave({ onListo }: { onListo: () => void }) {
     e.preventDefault();
     if (clave !== clave2) return setR({ ok: false, campo: "clave2", mensaje: "Las dos contraseñas no son iguales." });
     setEnviando(true);
-    const res = await cambiarClave(clave);
+    const res = await cambiarClave(clave, actual);
     setEnviando(false);
     setR(res);
     if (res.ok) onListo();
   };
   return (
     <form className="form cuenta__form" onSubmit={enviar} noValidate>
-      <Campo etiqueta="Contraseña nueva" error={r && !r.ok && r.campo !== "clave2" ? r.mensaje : null} ayuda={`Mínimo ${CLAVE_MINIMA} caracteres.`}>
-        {(id, d) => <ClaveInput id={id} describedBy={d} value={clave} onChange={setClave} autoComplete="new-password" autoFocus />}
+      <Campo etiqueta="Contraseña actual" error={r && !r.ok && r.campo === "actual" ? r.mensaje : null}>
+        {(id, d) => <ClaveInput id={id} describedBy={d} value={actual} onChange={setActual} autoComplete="current-password" autoFocus />}
+      </Campo>
+      <Campo etiqueta="Contraseña nueva" error={r && !r.ok && r.campo !== "clave2" && r.campo !== "actual" ? r.mensaje : null} ayuda={`Mínimo ${CLAVE_MINIMA} caracteres.`}>
+        {(id, d) => <ClaveInput id={id} describedBy={d} value={clave} onChange={setClave} autoComplete="new-password" />}
       </Campo>
       {clave && (
         <div className="fuerza" data-nivel={fuerza.nivel}>

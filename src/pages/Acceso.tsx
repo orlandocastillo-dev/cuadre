@@ -86,6 +86,11 @@ export function Acceso({ vista: inicial = "entrar", onSinCuenta, onClaveCambiada
             </button>
           </div>
         )}
+        {window.location.protocol !== "file:" && (
+          <p className="acceso__docs muted small">
+            <a href="../privacidad.html">Privacidad</a> · <a href="../terminos.html">Términos</a>
+          </p>
+        )}
       </section>
     </main>
   );
@@ -97,6 +102,7 @@ function FormEntrar({ email, setEmail, onOlvide, onSinConfirmar }: { email: stri
   const [clave, setClave] = useState("");
   const [r, setR] = useState<Resultado | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const espera = useCuentaRegresiva(r && !r.ok ? r.bloqueo : undefined);
 
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
@@ -104,6 +110,7 @@ function FormEntrar({ email, setEmail, onOlvide, onSinConfirmar }: { email: stri
     const res = await entrar(email, clave);
     setEnviando(false);
     setR(res);
+    if (!res.ok && res.bloqueo) setClave("");
     if (!res.ok && /confirmado/.test(res.mensaje)) onSinConfirmar();
     // Si entra bien, la app cambia sola al detectar la sesión.
   };
@@ -118,16 +125,31 @@ function FormEntrar({ email, setEmail, onOlvide, onSinConfirmar }: { email: stri
         {(id, desc) => <ClaveInput id={id} describedBy={desc} value={clave} onChange={setClave} autoComplete="current-password" />}
       </Campo>
       {r && !r.ok && !r.campo && <p className="form-error" role="alert">{r.mensaje}</p>}
-      <button type="submit" className="btn btn--primary btn--big" disabled={enviando}>
-        {enviando ? "Entrando…" : "Entrar"}
+      <button type="submit" className="btn btn--primary btn--big" disabled={enviando || espera > 0}>
+        {espera > 0 ? `Intenta de nuevo en ${reloj(espera)}` : enviando ? "Entrando…" : "Entrar"}
       </button>
     </form>
   );
 }
 
+/** Segundos que faltan, bajando de uno en uno (0 cuando no hay bloqueo). */
+function useCuentaRegresiva(segundos: number | undefined): number {
+  const [falta, setFalta] = useState(0);
+  useEffect(() => setFalta(segundos ?? 0), [segundos]);
+  useEffect(() => {
+    if (falta <= 0) return;
+    const t = setTimeout(() => setFalta((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [falta]);
+  return falta;
+}
+
+const reloj = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
 function FormCrear({ email, setEmail, onCreada }: { email: string; setEmail: (v: string) => void; onCreada: (confirmar: boolean) => void }) {
   const [nombre, setNombre] = useState("");
   const [clave, setClave] = useState("");
+  const [acepta, setAcepta] = useState(false);
   const [r, setR] = useState<Resultado | null>(null);
   const [enviando, setEnviando] = useState(false);
   const fuerza = fuerzaClave(clave);
@@ -135,7 +157,7 @@ function FormCrear({ email, setEmail, onCreada }: { email: string; setEmail: (v:
   const enviar = async (e: FormEvent) => {
     e.preventDefault();
     setEnviando(true);
-    const res = await crearCuenta(nombre, email, clave);
+    const res = await crearCuenta(nombre, email, clave, acepta);
     setEnviando(false);
     setR(res);
     if (res.ok) onCreada(!!res.confirmar);
@@ -164,6 +186,25 @@ function FormCrear({ email, setEmail, onCreada }: { email: string; setEmail: (v:
           </span>
           <span className="fuerza__texto">{fuerza.texto}</span>
         </div>
+      )}
+      <label className={`acepto ${err("acepta") ? "acepto--error" : ""}`}>
+        <input type="checkbox" checked={acepta} onChange={(e) => setAcepta(e.target.checked)} aria-describedby={err("acepta") ? "acepto-error" : undefined} />
+        <span>
+          Acepto los{" "}
+          <a href="../terminos.html" target="_blank" rel="noopener">
+            Términos
+          </a>{" "}
+          y autorizo el tratamiento de mis datos según la{" "}
+          <a href="../privacidad.html" target="_blank" rel="noopener">
+            Política de privacidad
+          </a>
+          .
+        </span>
+      </label>
+      {err("acepta") && (
+        <p className="form-error" id="acepto-error" role="alert">
+          {err("acepta")}
+        </p>
       )}
       {r && !r.ok && !r.campo && <p className="form-error" role="alert">{r.mensaje}</p>}
       <button type="submit" className="btn btn--primary btn--big" disabled={enviando}>

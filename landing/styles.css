@@ -966,6 +966,12 @@ b {
   color: var(--ink);
 }
 
+.foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
 /* Entradas suaves (solo con JavaScript y sin "reducir movimiento") */
 
 .js .reveal {
