@@ -201,7 +201,8 @@ describe("cuentas con Supabase", () => {
     fake.crearUsuario("orlando@correo.co", "vieja-clave-1");
     await userEvent.click(await screen.findByRole("button", { name: "¿La olvidaste?" }));
     await escribir(/^Correo/, "orlando@correo.co");
-    await userEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    await userEvent.click(screen.getByRole("button", { name: "Enviar enlace" }));
+    await userEvent.click(await screen.findByRole("button", { name: /Te llegó un código/ }));
     await escribir(/^Código/, "123456");
     await userEvent.click(screen.getByRole("button", { name: "Seguir" }));
     expect(await screen.findByRole("heading", { name: "Pon una contraseña nueva" }, { timeout: 3000 })).toBeInTheDocument();
@@ -213,7 +214,7 @@ describe("cuentas con Supabase", () => {
     fake.crearUsuario("orlando@correo.co", "vieja-clave-1");
     await userEvent.click(await screen.findByRole("button", { name: "¿La olvidaste?" }));
     await escribir(/^Correo/, "orlando@correo.co");
-    await userEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    await userEvent.click(screen.getByRole("button", { name: "Enviar enlace" }));
     expect(await screen.findByRole("heading", { name: "Revisa tu correo" })).toBeInTheDocument();
     expect(fake.llamadas).toContain("reset");
 

@@ -193,9 +193,9 @@ function FormRecuperar({ email, setEmail, onVolver }: { email: string; setEmail:
         </span>
         <h2>Revisa tu correo</h2>
         <p className="muted">
-          Si hay una cuenta con <b>{email.trim()}</b>, te llegará un código para poner una contraseña nueva. Puede tardar un par de minutos; mira también en spam.
+          Si hay una cuenta con <b>{email.trim()}</b>, te llegará un enlace para poner una contraseña nueva. Ábrelo en este mismo celular o computador. Puede tardar un par de minutos; mira también en spam.
         </p>
-        <CodigoCorreo email={email} tipo="recovery" boton="Seguir" />
+        <TengoCodigo email={email} />
         <button type="button" className="link" onClick={onVolver}>
           Volver a entrar
         </button>
@@ -209,13 +209,13 @@ function FormRecuperar({ email, setEmail, onVolver }: { email: string; setEmail:
         <Icon name="left" size={16} /> Volver
       </button>
       <h2>¿Olvidaste tu contraseña?</h2>
-      <p className="muted">Escribe tu correo y te mandamos un código para crear una nueva.</p>
+      <p className="muted">Escribe tu correo y te mandamos un enlace para crear una nueva.</p>
       <Campo etiqueta="Correo" error={r && !r.ok && r.campo === "email" ? r.mensaje : null}>
         {(id, desc) => <input id={id} aria-describedby={desc} type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />}
       </Campo>
       {r && !r.ok && !r.campo && <p className="form-error" role="alert">{r.mensaje}</p>}
       <button type="submit" className="btn btn--primary btn--big" disabled={enviando}>
-        {enviando ? "Enviando…" : "Enviar código"}
+        {enviando ? "Enviando…" : "Enviar enlace"}
       </button>
     </form>
   );
@@ -359,6 +359,18 @@ function CodigoCorreo({ email, tipo, boton }: { email: string; tipo: "signup" | 
       </button>
     </form>
   );
+}
+
+/** Por si el correo trae un código en vez de (o además de) el enlace. */
+function TengoCodigo({ email }: { email: string }) {
+  const [abierto, setAbierto] = useState(false);
+  if (!abierto)
+    return (
+      <button type="button" className="link link--small" onClick={() => setAbierto(true)}>
+        ¿Te llegó un código? Escríbelo aquí
+      </button>
+    );
+  return <CodigoCorreo email={email} tipo="recovery" boton="Seguir" />;
 }
 
 // ---------------------------------------------------------------------------
