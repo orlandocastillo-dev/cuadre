@@ -1,7 +1,4 @@
-/**
- * Fechas como texto "AAAA-MM-DD" y meses como "AAAA-MM": sin zonas horarias de por medio,
- * así un gasto del 31 a las 11 p. m. no aparece en el mes siguiente.
- */
+// Fechas como texto "AAAA-MM-DD" y meses como "AAAA-MM"
 
 export function toISODate(d: Date): string {
   const y = d.getFullYear();
@@ -40,10 +37,7 @@ export function monthsBetween(from: string, to: string): number {
   return (y2 - y1) * 12 + (m2 - m1) + 1;
 }
 
-/**
- * Qué parte del mes ya pasó, de 0 a 1. Un mes que ya terminó es 1; uno que no ha empezado, 0.
- * Se usa para comparar "lo que llevas" con lo que deberías llevar a esta altura.
- */
+// Qué parte del mes ya pasó, de 0 a 1. Un mes que ya terminó es 1
 export function elapsedFraction(month: string, todayISO: string): number {
   const current = monthOf(todayISO);
   if (month < current) return 1;

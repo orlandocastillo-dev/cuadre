@@ -20,8 +20,7 @@ import { Movimientos } from "./pages/Movimientos";
 import { Presupuestos } from "./pages/Presupuestos";
 import { Resumen } from "./pages/Resumen";
 
-// Sin cuenta, los datos viven en el navegador. Con Supabase configurado, App cambia al repositorio
-// de la cuenta cuando hay sesión (ver src/App.tsx).
+// Sin cuenta, los datos viven en el navegador
 const local = new LocalRepository();
 setRepository(local);
 

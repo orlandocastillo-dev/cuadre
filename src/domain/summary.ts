@@ -47,10 +47,7 @@ export function topCategories(t: MonthTotals, categories: Category[]): { categor
     .sort((a, b) => b.amount - a.amount);
 }
 
-/**
- * Promedio mensual de una categoría en los meses anteriores con movimientos (hasta `months`).
- * Devuelve null si no hay historial suficiente para comparar.
- */
+// Promedio mensual de una categoría en los meses anteriores con movimientos (hasta `months`)
 export function categoryAverage(ledger: Pick<Ledger, "transactions">, categoryId: string, month: string, months = 3): number | null {
   const firstMonth = ledger.transactions.reduce((min, t) => (monthOf(t.date) < min ? monthOf(t.date) : min), month);
   const values: number[] = [];
@@ -63,7 +60,7 @@ export function categoryAverage(ledger: Pick<Ledger, "transactions">, categoryId
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-/** Proyección a fin de mes al ritmo actual. En un mes cerrado es el valor real. */
+// Proyección a fin de mes al ritmo actual
 export function projectToMonthEnd(amount: number, month: string, todayISO: string): number {
   const f = elapsedFraction(month, todayISO);
   if (f >= 1 || f <= 0) return amount;
@@ -88,11 +85,7 @@ export interface Projection {
   byCategory: Map<string, number>;
 }
 
-/**
- * Cómo cerraría el mes al ritmo actual. Los pagos fijos (arriendo, servicios, suscripciones) no se
- * multiplican: cuentan una vez, y si todavía no se han cobrado este mes se suman como pendientes.
- * Solo el gasto variable se proyecta según los días que han pasado.
- */
+// Cómo cerraría el mes al ritmo actual
 export function projectMonth(ledger: Pick<Ledger, "transactions" | "categories">, month: string, todayISO: string): Projection {
   const f = elapsedFraction(month, todayISO);
   const groupOf = new Map(ledger.categories.map((c) => [c.id, c.group]));

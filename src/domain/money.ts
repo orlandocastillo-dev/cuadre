@@ -14,11 +14,7 @@ export function copShort(amount: number): string {
   return `${sign}$${Math.round(a)}`;
 }
 
-/**
- * Lee un valor como lo escribe la gente en Colombia:
- * "12.500", "12500", "$ 12.500", "12,5k", "12 mil", "1,2 millones", "-45.000,00".
- * Devuelve pesos enteros o null si no se entiende.
- */
+// Lee un valor como lo escribe la gente en Colombia
 export function parseAmount(input: string): number | null {
   let t = input.trim().toLowerCase().replace(/\$|cop|\s+/g, "");
   if (!t) return null;

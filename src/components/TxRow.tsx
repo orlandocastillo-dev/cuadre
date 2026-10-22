@@ -9,7 +9,7 @@ interface Props {
   account?: Account;
 }
 
-/** Una fila de movimiento. Tocarla abre el formulario para editarla. */
+// Una fila de movimiento
 export function TxRow({ tx, category, account }: Props) {
   const money = useMoney();
   const { open } = useSheet();

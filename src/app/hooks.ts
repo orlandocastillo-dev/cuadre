@@ -12,7 +12,7 @@ export const useAppSelector = useSelector.withTypes<RootState>();
 
 const EMPTY = emptyLedger();
 
-/** Los datos del usuario. Mientras cargan devuelve un libro vacío para no llenar todo de condicionales. */
+// Los datos del usuario
 export function useLedger() {
   const q = useGetLedgerQuery();
   return { ...q, ledger: q.data ?? EMPTY };

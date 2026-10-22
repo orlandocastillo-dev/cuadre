@@ -1,8 +1,4 @@
-/**
- * Un Supabase falso, en memoria, con lo justo que usa la app: auth (crear cuenta, entrar, salir,
- * recuperar), tablas con select/upsert/delete filtrados por usuario y las dos funciones RPC.
- * Imita la regla RLS: cada consulta solo ve las filas del usuario con sesión.
- */
+// Un Supabase falso, en memoria, con lo justo que usa la app
 type Fila = Record<string, unknown>;
 type Evento = "INITIAL_SESSION" | "SIGNED_IN" | "SIGNED_OUT" | "USER_UPDATED" | "PASSWORD_RECOVERY";
 

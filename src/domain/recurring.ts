@@ -27,10 +27,7 @@ export function merchantKey(note: string): string {
     .join(" ");
 }
 
-/**
- * Cobros que se repiten: el mismo comercio en al menos 2 meses seguidos con un valor parecido (±15 %),
- * y que siguen vivos (último cobro en el mes actual o el anterior).
- */
+// Cobros que se repiten: el mismo comercio en al menos 2 meses seguidos con un valor parecido (±15 %), y que siguen vivos (último cobro en el mes actual o el anterior)
 export function findRecurring(txs: Transaction[], currentMonth: string): Recurring[] {
   const groups = new Map<string, Transaction[]>();
   for (const t of txs) {

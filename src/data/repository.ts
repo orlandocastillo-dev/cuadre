@@ -1,10 +1,6 @@
 import type { Budget, Category, Goal, Ledger, Rule, Transaction } from "../domain/types";
 
-/**
- * Todo lo que la app necesita de la base de datos. Hoy lo cumple LocalRepository (el navegador);
- * para tener cuentas y datos en un servidor basta con otra implementación de esta interfaz
- * (Supabase o una API propia) y las pantallas no cambian.
- */
+// Todo lo que la app necesita de la base de datos
 export interface Repository {
   readonly kind: "local" | "remoto";
   load(): Promise<Ledger>;

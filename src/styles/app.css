@@ -1,9 +1,4 @@
-/*
-  Cuadre. La cifra que importa ("te quedan") va grande y sola; todo lo demás es tranquilo.
-  Verde para lo que entra, violeta para lo que sale (pareja validada para daltonismo), rojo solo para
-  "te pasaste". Fondo de papel cálido. Instrument Serif para los títulos y Geist para todo lo demás,
-  con cifras tabulares para que los montos se alineen.
-*/
+/* Cuadre */
 
 :root {
   --bg: #f6f3ec;
@@ -194,7 +189,7 @@ textarea {
 .cat--c8 { --cbg: var(--c8-bg); --cfg: var(--c8-fg); }
 .cat--c9 { --cbg: var(--c9-bg); --cfg: var(--c9-fg); }
 
-/* ---------- Estructura ---------- */
+/* Estructura */
 
 .shell {
   display: grid;
@@ -312,7 +307,7 @@ textarea {
   max-width: 62ch;
 }
 
-/* ---------- Controles ---------- */
+/* Controles */
 
 .btn {
   display: inline-flex;
@@ -534,7 +529,7 @@ textarea:focus,
   flex: none;
 }
 
-/* ---------- Mes ---------- */
+/* Mes */
 
 .month {
   display: flex;
@@ -550,7 +545,7 @@ textarea:focus,
   margin-left: 0.6rem;
 }
 
-/* ---------- Resumen ---------- */
+/* Resumen */
 
 .hero {
   display: grid;
@@ -863,7 +858,7 @@ textarea:focus,
   white-space: nowrap;
 }
 
-/* ---------- Movimientos ---------- */
+/* Movimientos */
 
 .txs {
   list-style: none;
@@ -968,7 +963,7 @@ textarea:focus,
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Hoja de nuevo movimiento ---------- */
+/* Hoja de nuevo movimiento */
 
 .sheet {
   width: min(540px, calc(100vw - 2rem));
@@ -1128,7 +1123,7 @@ textarea:focus,
   text-align: center;
 }
 
-/* ---------- Presupuestos ---------- */
+/* Presupuestos */
 
 .budgets {
   list-style: none;
@@ -1213,7 +1208,7 @@ textarea:focus,
   font-weight: 550;
 }
 
-/* ---------- Metas ---------- */
+/* Metas */
 
 .goals {
   list-style: none;
@@ -1267,7 +1262,7 @@ textarea:focus,
   gap: 0.5rem;
 }
 
-/* ---------- Importar ---------- */
+/* Importar */
 
 .drop {
   position: relative;
@@ -1348,7 +1343,7 @@ textarea:focus,
   color: var(--in);
 }
 
-/* ---------- Ajustes ---------- */
+/* Ajustes */
 
 .settings {
   display: grid;
@@ -1414,7 +1409,7 @@ label.setting {
   translate: 18px 0;
 }
 
-/* ---------- Bienvenida ---------- */
+/* Bienvenida */
 
 .welcome {
   display: grid;
@@ -1447,7 +1442,7 @@ label.setting {
   margin-top: 0.5rem;
 }
 
-/* ---------- Barra inferior (celular) ---------- */
+/* Barra inferior (celular) */
 
 .tabs {
   display: none;
@@ -1617,7 +1612,7 @@ label.setting {
   letter-spacing: -0.02em;
 }
 
-/* ---------- Resumen: la cifra grande sobre el papel, sin tarjeta ---------- */
+/* Resumen: la cifra grande sobre el papel, sin tarjeta */
 
 .page--dash {
   gap: 1.75rem;
@@ -1731,7 +1726,7 @@ label.setting {
   }
 }
 
-/* ---------- Cuenta: entrar, crear cuenta, recuperar ---------- */
+/* Cuenta: entrar, crear cuenta, recuperar */
 
 .acceso {
   display: grid;
@@ -1966,7 +1961,7 @@ input.codigo::placeholder {
   line-height: 1.02;
 }
 
-/* ---------- Tu cuenta (Ajustes) ---------- */
+/* Tu cuenta (Ajustes) */
 
 .cuenta {
   margin-bottom: 1.25rem;

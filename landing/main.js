@@ -1,5 +1,4 @@
-// Un mes de ejemplo que se recalcula al mover el día: el resumen de la portada y la gráfica de proyección.
-// Usa la misma idea que la app (src/domain/summary.ts): los pagos fijos cuentan una vez y solo lo variable se proyecta.
+// Un mes de ejemplo que se recalcula al mover el día: el resumen de la portada y la gráfica de proyección
 
 const DAYS = 31;
 const INCOME = 3_300_000;
@@ -55,7 +54,7 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 
-/* ---------- Portada: el resumen del mes ---------- */
+// Portada: el resumen del mes
 
 const catList = $("[data-cats]");
 catList.innerHTML = CATS.map(
@@ -102,7 +101,7 @@ function renderMonth(day) {
   box.textContent = alert ? alert.text : day < DAYS ? "Vas bien: ninguna categoría va por encima de su ritmo." : "Mes cerrado sin pasarte en ninguna categoría.";
 }
 
-/* ---------- Gráfica de proyección ---------- */
+// Gráfica de proyección
 
 const svg = $("[data-svg]");
 const W = 760, H = 360, PAD = { l: 56, r: 12, t: 20, b: 36 };
@@ -160,7 +159,7 @@ function renderChart(day) {
 
 drawChart();
 
-/* ---------- Un solo día para toda la página ---------- */
+// Un solo día para toda la página
 
 // La tira de 31 días: cada día es un botón; los que ya pasaron quedan marcados.
 const strip = $("[data-days]");
@@ -208,7 +207,7 @@ else {
   requestAnimationFrame(run);
 }
 
-/* ---------- Galería y entradas al hacer scroll ---------- */
+// Galería y entradas al hacer scroll
 
 const gallery = $("[data-gallery]");
 $$("[data-scroll]").forEach((b) =>

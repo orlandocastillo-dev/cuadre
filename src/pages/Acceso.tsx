@@ -96,7 +96,6 @@ export function Acceso({ vista: inicial = "entrar", onSinCuenta, onClaveCambiada
   );
 }
 
-// ---------------------------------------------------------------------------
 
 function FormEntrar({ email, setEmail, onOlvide, onSinConfirmar }: { email: string; setEmail: (v: string) => void; onOlvide: () => void; onSinConfirmar: () => void }) {
   const [clave, setClave] = useState("");
@@ -359,10 +358,7 @@ function FormNuevaClave({ onListo }: { onListo?: () => void }) {
   );
 }
 
-/**
- * El código que llega por correo. Al confirmarlo, Supabase abre la sesión y la app sigue sola
- * (o pasa a "pon una contraseña nueva" si es para recuperarla).
- */
+// El código que llega por correo
 function CodigoCorreo({ email, tipo, boton }: { email: string; tipo: "signup" | "recovery"; boton: string }) {
   const [codigo, setCodigo] = useState("");
   const [r, setR] = useState<Resultado | null>(null);
@@ -414,7 +410,6 @@ function TengoCodigo({ email }: { email: string }) {
   return <CodigoCorreo email={email} tipo="recovery" boton="Seguir" />;
 }
 
-// ---------------------------------------------------------------------------
 
 /** Campo con etiqueta, ayuda y error unidos al input para lectores de pantalla. */
 export function Campo({ etiqueta, error, ayuda, extra, children }: { etiqueta: string; error?: string | null; ayuda?: string; extra?: ReactNode; children: (id: string, describedBy?: string) => ReactNode }) {

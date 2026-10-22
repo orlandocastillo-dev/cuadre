@@ -81,10 +81,7 @@ export async function escucharSesion(cb: (evento: AuthChangeEvent, s: Session | 
   return () => data.subscription.unsubscribe();
 }
 
-/**
- * Crea la cuenta. Si el proyecto pide confirmar el correo, Supabase manda un código y un enlace;
- * la sesión se abre al escribir el código o al tocar el enlace. Si no, queda abierta de una vez.
- */
+// Crea la cuenta
 export async function crearCuenta(nombre: string, email: string, clave: string, acepta = false): Promise<Resultado & { confirmar?: boolean }> {
   if (nombre.trim().length < 2) return { ok: false, campo: "nombre", mensaje: "Escribe tu nombre." };
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
@@ -120,11 +117,7 @@ export function duracion(segundos: number): string {
 const mensajeBloqueo = (seg: number) =>
   `Por seguridad, bloqueamos la entrada con este correo durante ${duracion(seg)} por varios intentos fallidos. Si olvidaste la contraseña, puedes recuperarla.`;
 
-/**
- * Entrar con correo y contraseña. Tras 5 contraseñas equivocadas seguidas, la base bloquea ese correo
- * (15 min, luego 30, 60…). Si las funciones de bloqueo no responden, se entra igual: Supabase además
- * limita los intentos por dirección IP.
- */
+// Entrar con correo y contraseña
 export async function entrar(email: string, clave: string): Promise<Resultado> {
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
   if (!clave) return { ok: false, campo: "clave", mensaje: "Escribe tu contraseña." };
@@ -153,10 +146,7 @@ export async function entrar(email: string, clave: string): Promise<Resultado> {
 /** Lo que trae el correo: un código de 6 dígitos (o de hasta 10 si el proyecto lo pide así). */
 export const codigoValido = (c: string) => /^\d{6,10}$/.test(c.replace(/\s/g, ""));
 
-/**
- * Confirma el correo (o abre el cambio de contraseña) con el código que llegó por correo.
- * A diferencia del enlace, sirve desde cualquier dispositivo: no depende de dónde se creó la cuenta.
- */
+// Confirma el correo (o abre el cambio de contraseña) con el código que llegó por correo
 export async function verificarCodigo(email: string, codigo: string, tipo: "signup" | "recovery"): Promise<Resultado> {
   const token = codigo.replace(/\s/g, "");
   if (!codigoValido(token)) return { ok: false, campo: "codigo", mensaje: "Escribe el código de 6 dígitos que te llegó." };
@@ -164,10 +154,7 @@ export async function verificarCodigo(email: string, codigo: string, tipo: "sign
   return hacer(() => db.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: tipo }));
 }
 
-/**
- * El botón del correo trae ?token_hash=...&type=... y se puede abrir en otro celular o computador.
- * Devuelve el tipo si había uno en la dirección (y la deja limpia), o null.
- */
+// El botón del correo trae ?token_hash=...&type=... y se puede abrir en otro celular o computador
 export async function abrirEnlaceDelCorreo(): Promise<{ tipo: string; r: Resultado } | null> {
   const q = new URLSearchParams(window.location.search);
   const token_hash = q.get("token_hash");
@@ -184,17 +171,14 @@ export async function reenviarConfirmacion(email: string): Promise<Resultado> {
   return hacer(() => db.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: regreso() } }));
 }
 
-/** Manda el código (y el enlace) para poner una contraseña nueva. Por seguridad no dice si el correo existe. */
+// Manda el código (y el enlace) para poner una contraseña nueva
 export async function recuperarClave(email: string): Promise<Resultado> {
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
   const db = await nube();
   return hacer(() => db.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: regreso() }));
 }
 
-/**
- * Pone una contraseña nueva. Desde "Tu cuenta" se pide la actual (si alguien encuentra la sesión
- * abierta, no puede cambiarla); desde el enlace de "olvidé mi contraseña" no hace falta.
- */
+// Pone una contraseña nueva
 export async function cambiarClave(clave: string, actual?: string): Promise<Resultado> {
   if (actual !== undefined && !actual) return { ok: false, campo: "actual", mensaje: "Escribe tu contraseña actual." };
   if (clave.length < CLAVE_MINIMA) return { ok: false, campo: "clave", mensaje: `La contraseña debe tener al menos ${CLAVE_MINIMA} caracteres.` };

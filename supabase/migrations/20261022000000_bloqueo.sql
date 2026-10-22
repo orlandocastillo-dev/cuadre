@@ -1,10 +1,4 @@
--- Bloqueo por intentos fallidos de contraseña.
--- Después de 5 contraseñas equivocadas seguidas para el mismo correo, ese correo queda bloqueado
--- 15 minutos; si vuelve a pasar, 30, luego 60, y así hasta un máximo de 24 horas.
--- Al entrar bien, el contador vuelve a cero.
---
--- La tabla vive en un esquema que la API no expone: nadie la lee ni la cambia desde el navegador,
--- solo a través de las tres funciones de abajo.
+-- Bloqueo por intentos fallidos de contraseña
 
 create schema if not exists privado;
 
@@ -33,7 +27,7 @@ as $$
   left join privado.intentos i on i.correo = lower(trim(bloqueo_restante.correo))
 $$;
 
--- Anota una contraseña equivocada. Devuelve los segundos de bloqueo (0 si todavía le quedan intentos).
+-- Anota una contraseña equivocada
 create or replace function public.registrar_fallo(correo text)
 returns integer
 language plpgsql

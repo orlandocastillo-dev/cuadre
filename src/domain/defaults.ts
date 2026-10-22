@@ -41,7 +41,7 @@ const keywords: Record<string, string[]> = {
   salario: ["nomina", "nómina", "salario", "pago de nom", "abono nomina"],
 };
 
-/** Reglas para clasificar los movimientos importados del banco. El usuario puede agregar las suyas. */
+// Reglas para clasificar los movimientos importados del banco
 export const DEFAULT_RULES: Rule[] = Object.entries(keywords).flatMap(([categoryId, words]) =>
   words.map((pattern) => ({ pattern, categoryId })),
 );

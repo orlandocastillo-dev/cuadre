@@ -4,7 +4,7 @@ import type { Repository } from "./repository";
 
 const KEY = "cuadre:ledger:v1";
 
-/** Guarda todo en el navegador. Sirve para usar la app sin cuenta y como modo demo. */
+// Guarda todo en el navegador
 export class LocalRepository implements Repository {
   readonly kind = "local" as const;
   private cache: Ledger | null = null;

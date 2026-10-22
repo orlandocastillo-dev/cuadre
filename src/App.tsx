@@ -43,12 +43,7 @@ const guardar = (k: string, v: string | null) => {
   }
 };
 
-/**
- * Decide qué se muestra al abrir la app:
- * - Sin Supabase configurado: como siempre, todo en el navegador (bienvenida la primera vez).
- * - Con Supabase: pantalla de entrar o crear cuenta, o la app si ya hay sesión. También se puede
- *   seguir sin cuenta, y la presentación abre los datos de ejemplo sin pedir nada.
- */
+// Decide qué se muestra al abrir la app
 export function App({ router, local }: { router: Router; local: LocalRepository }) {
   const dispatch = useAppDispatch();
   const disponible = nubeDisponible();

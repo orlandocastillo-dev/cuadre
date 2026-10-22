@@ -1,9 +1,6 @@
 export type Kind = "gasto" | "ingreso";
 
-/**
- * Para qué es el gasto. Sirve para comparar con la regla 50/30/20:
- * necesidades, gustos y ahorro. Los aportes (diezmo, donaciones) se cuentan aparte.
- */
+// Para qué es el gasto
 export type Group = "necesidad" | "gusto" | "ahorro" | "aporte";
 
 export interface Category {

@@ -11,10 +11,7 @@ function random(seed: number) {
   };
 }
 
-/**
- * Tres meses de movimientos realistas para una persona en Barranquilla, terminando en `todayISO`.
- * El mes actual tiene más domicilios y cafés que los anteriores, para que se vean las recomendaciones.
- */
+// Tres meses de movimientos realistas para una persona en Barranquilla, terminando en `todayISO`
 export function demoLedger(todayISO: string): Ledger {
   const rnd = random(42);
   const between = (a: number, b: number) => Math.round((a + rnd() * (b - a)) / 100) * 100;

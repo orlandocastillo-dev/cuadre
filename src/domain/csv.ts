@@ -69,7 +69,7 @@ const norm = (s: string) =>
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
 
-/** Reconoce las columnas por su encabezado: sirve para los extractos de Bancolombia, Nequi, Davivienda y similares. */
+// Reconoce las columnas por su encabezado
 export function detectColumns(header: string[]): ColumnMap | null {
   const h = header.map(norm);
   const taken = new Set<number>();

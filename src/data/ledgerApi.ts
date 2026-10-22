@@ -23,10 +23,7 @@ async function run<T>(fn: () => Promise<T>): Promise<{ data: T } | { error: Err 
   }
 }
 
-/**
- * RTK Query sobre el repositorio. Las mutaciones actualizan la caché antes de que responda la base
- * de datos (actualización optimista), así registrar un gasto se siente instantáneo también con servidor.
- */
+// RTK Query sobre el repositorio
 export const ledgerApi = createApi({
   reducerPath: "ledgerApi",
   baseQuery: fakeBaseQuery<Err>(),

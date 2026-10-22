@@ -1,10 +1,6 @@
--- Cuadre: cuentas de usuario y datos en Supabase.
--- Cada fila lleva el user_id de su dueño y las políticas RLS hacen que cada persona
--- solo pueda ver y cambiar lo suyo, aunque la llave pública (anon key) esté en el navegador.
+-- Cuadre: cuentas de usuario y datos en Supabase
 
--- ---------------------------------------------------------------------------
 -- Tablas
--- ---------------------------------------------------------------------------
 
 create table public.categorias (
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -71,9 +67,7 @@ create table public.reglas (
   foreign key (user_id, categoria_id) references public.categorias (user_id, id) on delete cascade
 );
 
--- ---------------------------------------------------------------------------
 -- Seguridad: cada quien solo ve y cambia sus propias filas
--- ---------------------------------------------------------------------------
 
 alter table public.categorias enable row level security;
 alter table public.cuentas enable row level security;
@@ -99,13 +93,9 @@ create policy "solo lo propio" on public.reglas for all to authenticated
 -- Sin sesión no se puede tocar nada.
 revoke all on public.categorias, public.cuentas, public.movimientos, public.presupuestos, public.metas, public.reglas from anon;
 
--- ---------------------------------------------------------------------------
 -- Funciones
--- ---------------------------------------------------------------------------
 
--- Reemplaza todos los datos del usuario en una sola transacción: restaurar un respaldo,
--- cargar datos de ejemplo o pasar a la cuenta lo que estaba guardado en el celular.
--- Corre con los permisos de quien la llama (security invoker), así que RLS sigue aplicando.
+-- Reemplaza todos los datos del usuario en una sola transacción
 create or replace function public.reemplazar_todo(datos jsonb)
 returns void
 language plpgsql
@@ -158,9 +148,7 @@ $$;
 revoke all on function public.reemplazar_todo(jsonb) from public, anon;
 grant execute on function public.reemplazar_todo(jsonb) to authenticated;
 
--- "Eliminar mi cuenta": borra el usuario y, en cascada, todos sus datos.
--- Necesita security definer porque auth.users no se puede tocar desde el navegador;
--- solo borra la fila de quien la llama.
+-- "Eliminar mi cuenta": borra el usuario y, en cascada, todos sus datos
 create or replace function public.eliminar_mi_cuenta()
 returns void
 language plpgsql

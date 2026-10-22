@@ -18,7 +18,7 @@ function newId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `t-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-/** Formulario para registrar o editar un movimiento. En el celular sale desde abajo, como una hoja. */
+// Formulario para registrar o editar un movimiento
 export function TransactionSheet({ open, edit, kind: initialKind, categoryId: initialCategory, onClose }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const { ledger } = useLedger();

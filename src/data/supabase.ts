@@ -3,9 +3,7 @@ import { emptyLedger } from "../domain/seed";
 import type { Account, Budget, Category, Goal, Ledger, Rule, Transaction } from "../domain/types";
 import type { Repository } from "./repository";
 
-// ---------------------------------------------------------------------------
 // Filas de la base (español, snake_case) <-> tipos de la app
-// ---------------------------------------------------------------------------
 
 export interface FilaCategoria { id: string; nombre: string; tipo: Category["kind"]; grupo: Category["group"]; icono: string; color: number }
 export interface FilaCuenta { id: string; nombre: string; tipo: Account["type"] }
@@ -68,11 +66,7 @@ export const hacia = {
 /** Supabase entrega máximo 1.000 filas por consulta: se piden por páginas. */
 const PAGINA = 1000;
 
-/**
- * Los datos en Supabase, a nombre del usuario que inició sesión.
- * Cada escritura pasa por las políticas RLS: aunque alguien cambie el código del navegador,
- * la base no le deja leer ni tocar filas de otra persona.
- */
+// Los datos en Supabase, a nombre del usuario que inició sesión
 export class SupabaseRepository implements Repository {
   readonly kind = "remoto" as const;
 

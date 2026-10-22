@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import type { Usuario } from "./cuenta";
 
 export interface CuentaCtx {
-  /** "nube": con sesión y datos en Supabase. "local": sin cuenta, datos en este navegador. */
+  // "nube": con sesión y datos en Supabase
   modo: "local" | "nube";
   usuario: Usuario | null;
   /** true si la app tiene Supabase configurado (se puede crear cuenta). */

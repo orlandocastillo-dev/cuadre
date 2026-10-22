@@ -1,10 +1,7 @@
 import { useState } from "react";
 import type { Ledger } from "../domain/types";
 
-/**
- * Primera vez que se entra con cuenta en un dispositivo que ya tenía datos sin cuenta:
- * se ofrece pasarlos a la cuenta para no empezar de cero.
- */
+// Primera vez que se entra con cuenta en un dispositivo que ya tenía datos sin cuenta
 export function PasarDatos({ local, nombre, onPasar, onOmitir }: { local: Ledger; nombre: string; onPasar: () => Promise<string | null>; onOmitir: () => void }) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);

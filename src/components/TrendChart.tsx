@@ -14,7 +14,7 @@ const W = 640;
 const H = 220;
 const PAD = { top: 16, right: 8, bottom: 28, left: 52 };
 
-/** Ingresos y gastos de los últimos meses, en barras lado a lado. Un solo eje, en pesos. */
+// Ingresos y gastos de los últimos meses, en barras lado a lado
 export function TrendChart({ data, selected, onSelect }: Props) {
   const hide = useAppSelector((s) => s.prefs.hideAmounts);
   const [hover, setHover] = useState<number | null>(null);

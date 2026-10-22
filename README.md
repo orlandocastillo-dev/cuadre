@@ -1,8 +1,8 @@
-# Cuadre: finanzas personales
+# Cuadre
 
-App web para llevar las cuentas del mes y recibir recomendaciones calculadas con tu propio historial, no con reglas genéricas. Por ejemplo: "A este ritmo te pasas en mercado", "14 gastos pequeños en café suman $103.600" o "Pagas 4 suscripciones: $88.600 al mes". Está pensada primero para el celular y funciona igual en el computador.
+App para llevar las cuentas del mes. La hice porque quería saber cuánta plata me queda de verdad para el resto del mes y en qué se me está yendo, con mis propios números y no con reglas genéricas.
 
-**En vivo:** https://cuadre-lake.vercel.app. La página de presentación está en la raíz (HTML y CSS sin frameworks, en `landing/`) y la app en `/app/`. "Ver con datos de ejemplo" abre la app ya cargada con tres meses de movimientos.
+En vivo: https://cuadre-lake.vercel.app (la app está en `/app/`; "Ver con datos de ejemplo" la abre con tres meses de movimientos).
 
 ![Resumen en el computador](docs/captura-resumen.png)
 
@@ -10,90 +10,46 @@ App web para llevar las cuentas del mes y recibir recomendaciones calculadas con
 | --- | --- | --- |
 | ![](docs/captura-movil-resumen.png) | ![](docs/captura-movil-nuevo.png) | ![](docs/captura-movil-oscuro.png) |
 
-## Qué hace
+## Lo que hace
 
-- **Resumen del mes.** Muestra cuánto te queda y una barra de ritmo que compara lo gastado con los días que han pasado ("día 20 de 31: has usado el 88 %"). También cuánto puedes gastar por día hasta fin de mes, en qué se te fue la plata por categoría y la evolución de los últimos meses.
-- **Registrar en segundos.** Botón central en el celular, valor con puntos de miles mientras escribes, categorías con ícono, fecha (Hoy, Ayer u otra) y cuenta (Efectivo, Bancolombia, Nequi).
-- **Movimientos.** Agrupados por día, con búsqueda sin tildes y filtros por categoría y cuenta. Tocar uno lo edita o lo elimina.
-- **Presupuestos por categoría.** Cada uno muestra la barra del mes con la marca del día de hoy. Cuando el ritmo indica que te vas a pasar, avisa antes de que pase. Para las categorías sin presupuesto sugiere un límite según tu promedio.
-- **Metas de ahorro.** Cada meta dice cuánto apartar al mes para llegar a la fecha y cuándo la cumples al ritmo actual. Abonar también queda registrado como ahorro del mes.
-- **Importar el extracto del banco.** Acepta CSV de Bancolombia, Nequi, Davivienda y similares:
-  - Reconoce las columnas solo, sea una columna de valor con signo o columnas de débito y crédito.
-  - Clasifica cada movimiento con reglas por comercio (Rappi, D1, Air-e, Netflix...).
-  - Marca los que ya estaban registrados.
-  - Si corriges una categoría, la recuerda para la próxima vez.
-- **Ocultar montos**, para abrir la app en público. Tema claro y oscuro, y respaldo en JSON.
+- Resumen del mes: cuánto te queda, cuánto puedes gastar por día y una barra que compara lo gastado con los días que han pasado.
+- Registrar un gasto o un ingreso en pocos toques, con categoría, fecha y cuenta (efectivo, Bancolombia, Nequi…).
+- Presupuestos por categoría que avisan antes de que te pases, y metas de ahorro que dicen cuánto apartar al mes.
+- Importar el extracto del banco en CSV. Reconoce las columnas, sugiere la categoría según el comercio y recuerda las correcciones.
+- Recomendaciones según tu historial: gastos hormiga, suscripciones, categorías que van por encima de tu promedio.
+- Ocultar montos para abrirla en público, tema claro y oscuro, y respaldo en JSON.
 
-## Las recomendaciones
+Para proyectar el fin de mes no uso una regla de tres: el arriendo que pagaste el día 2 no se multiplica por 31. Los pagos fijos cuentan una vez y solo lo variable se proyecta.
 
-Todo se calcula en `src/domain/insights.ts`, con funciones puras que se prueban aparte. Hay seis tipos, ordenados de lo urgente a la buena noticia:
+## Cuentas
 
-| Tipo | Cuándo aparece |
-| --- | --- |
-| Presupuesto pasado | Lo gastado supera el límite de la categoría. |
-| Ritmo | La proyección a fin de mes supera el presupuesto en más del 5 %. |
-| Contra tu promedio | Una categoría sin presupuesto va a cerrar 30 % por encima de tu promedio de los 3 meses anteriores (o 30 % por debajo, como buena noticia). |
-| Gastos hormiga | 8 o más gastos de menos de $25.000 en gustos, con su valor al año. |
-| Suscripciones | Cobros del mismo comercio, de valor parecido (±15 %), en meses seguidos. |
-| Ahorro y metas | Cuánto queda de lo que entró y si lo que apartas alcanza para cada meta. |
+Con Supabase cada persona crea su cuenta y ve sus datos en el celular y en el computador. Cada fila de la base tiene el `user_id` de su dueño y las políticas (RLS) solo dejan leer y cambiar lo propio. Después de 5 contraseñas equivocadas el correo queda bloqueado un rato.
 
-**La proyección no es una regla de tres.** El arriendo pagado el día 2 no se multiplica por 31/2: los pagos fijos, detectados como cobros que se repiten, cuentan una vez, y si todavía no se han cobrado este mes se suman como pendientes. Solo el gasto variable se proyecta según los días que han pasado.
+Sin cuenta también funciona: los datos se quedan en el navegador.
 
-## Tecnologías
+Para conectarla:
 
-| | |
-| --- | --- |
-| Interfaz | React 19, TypeScript estricto, Vite, React Router 7 |
-| Cuentas y base de datos | Supabase Auth (PKCE) y PostgreSQL con Row Level Security |
-| Estado y datos | Redux Toolkit con **RTK Query** sobre un repositorio, con actualizaciones optimistas: el gasto aparece al instante y, si guardar falla, se revierte |
-| Gráficos | SVG hecho a mano. Ingresos y gastos con un solo eje, colores validados para daltonismo y tabla equivalente para lectores de pantalla |
-| Diseño | Instrument Serif para los títulos y Geist con cifras tabulares para el texto y los montos, fondo de papel cálido, tema claro y oscuro |
-| Calidad | Vitest y Testing Library (56 pruebas), oxlint, CI en GitHub Actions |
+1. Crea un proyecto en [supabase.com](https://supabase.com) y corre los archivos de `supabase/migrations/` en el SQL Editor.
+2. En Authentication → URL Configuration pon la dirección de la app como Site URL y en Redirect URLs.
+3. Copia `.env.example` como `.env.local` (o crea las variables en Vercel) con la URL y la llave anon.
 
-### Cuentas de usuario y datos en Supabase
+## Con qué está hecha
 
-Con Supabase configurado, cada persona crea su cuenta y sus movimientos quedan en la base de datos: los ve igual en el celular y en el computador. Sin configurarlo, la app funciona como siempre, con todo en el navegador.
+React, TypeScript, Redux Toolkit con RTK Query, React Router y Vite. Las gráficas son SVG hechos a mano. La base de datos y las cuentas son de Supabase. Las pantallas no saben dónde se guardan los datos: todo pasa por `src/data/repository.ts`, que tiene una versión para el navegador y otra para Supabase.
 
-- **Cuentas:** crear cuenta con confirmación de correo, entrar, "¿olvidaste tu contraseña?" con enlace por correo, cambiar nombre y contraseña, cerrar sesión y eliminar la cuenta con todos sus datos. Medidor de seguridad de la contraseña y mensajes de error en español.
-- **Datos aislados por usuario con RLS:** cada fila lleva el `user_id` de su dueño y las políticas de Postgres solo dejan leer y cambiar lo propio. La llave pública puede estar en el navegador sin riesgo.
-- **Sin pasos a medias:** restaurar un respaldo o pasar los datos del celular a la cuenta se hace con una función de Postgres (`reemplazar_todo`) en una sola transacción.
-- **Pasar lo que ya tenías:** al entrar por primera vez en un equipo con datos guardados sin cuenta, la app ofrece subirlos.
-- **Sin cuenta también se puede:** "Usar sin cuenta" y "Ver con datos de ejemplo" siguen funcionando sin registrarse.
+La lógica (totales, proyección, recomendaciones, lectura del CSV) está en `src/domain/` y tiene pruebas con Vitest.
 
-Las pantallas no saben dónde se guardan los datos: todo pasa por la interfaz `Repository` (`src/data/repository.ts`), que cumplen `LocalRepository` (navegador) y `SupabaseRepository` (`src/data/supabase.ts`). El esquema, las políticas y las funciones están en `supabase/migrations/`.
-
-**Activarlo:**
-
-1. Crea un proyecto en [supabase.com](https://supabase.com) y corre `supabase/migrations/20261021000000_cuadre.sql` en el SQL Editor.
-2. En Authentication → URL Configuration, agrega la dirección de la app (por ejemplo `https://cuadre-lake.vercel.app/app/`) como Site URL y en Redirect URLs.
-3. Copia `.env.example` como `.env.local` (o crea las mismas variables en Vercel) con la URL y la llave anon del proyecto.
-
-```
-src/
-  domain/       lógica pura: dinero, fechas, totales, proyección, recomendaciones, suscripciones, metas, CSV
-  auth/         cuentas: crear, entrar, recuperar contraseña, errores en español
-  data/         Repository (la interfaz), LocalRepository, SupabaseRepository y la API de RTK Query
-  features/     preferencias (tema, ocultar montos)
-  components/   Layout, hoja de nuevo movimiento, gráfico, filas, íconos
-  pages/        Resumen, Movimientos, Presupuestos, Metas, Importar, Ajustes, Bienvenida, Acceso, Tu cuenta
-landing/        página de presentación (HTML y CSS), se copia a la raíz del sitio al compilar
-supabase/       tablas, políticas RLS y funciones de Postgres
-tests/          dominio, flujos completos de la app y de las cuentas (con un Supabase falso en memoria)
-```
-
-## Correr el proyecto
+## Correrla
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev
 npm test
-npm run build      # dist/: la presentación en la raíz y la app en dist/app/
+npm run build
 ```
 
-En Windows con PowerShell usa `npm.cmd` en lugar de `npm`.
+En Windows con PowerShell usa `npm.cmd` si `npm` da error.
 
-**Sin instalar nada:** `portable/index.html` se abre con doble clic. Se regenera con `npm run build:portable`.
+`portable/index.html` se abre con doble clic, sin instalar nada (`npm run build:portable` lo regenera).
 
-## Licencia
-
-MIT. Orlando Castillo, 2026.
+Licencia MIT.

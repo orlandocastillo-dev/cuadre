@@ -19,10 +19,7 @@ const ORDER: Record<Tone, number> = { alerta: 0, aviso: 1, dato: 2, bien: 3 };
 /** Diferencias menores a esto no merecen un aviso: nadie quiere una alerta por $3.000. */
 const MIN_DIFF = 30_000;
 
-/**
- * Recomendaciones para un mes, calculadas solo con los datos de la persona:
- * presupuestos, su propio promedio, cobros que se repiten, gastos pequeños, ahorro y metas.
- */
+// Recomendaciones para un mes, calculadas solo con los datos de la persona
 export function insights(ledger: Ledger, month: string, todayISO: string): Insight[] {
   const out: Insight[] = [];
   const t = totals(ledger, month);
