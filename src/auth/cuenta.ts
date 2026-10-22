@@ -7,7 +7,7 @@ export interface Usuario {
   nombre: string;
 }
 
-export type Resultado = { ok: true } | { ok: false; mensaje: string; campo?: "nombre" | "email" | "clave" | "clave2" };
+export type Resultado = { ok: true } | { ok: false; mensaje: string; campo?: "nombre" | "email" | "clave" | "clave2" | "codigo" };
 
 export const CLAVE_MINIMA = 8;
 
@@ -51,6 +51,8 @@ export function mensajeAuth(error: unknown): string {
   if (/over_email_send_rate_limit|rate limit|too many/i.test(m) || e?.status === 429) return "Hiciste muchos intentos seguidos. Espera un minuto e inténtalo de nuevo.";
   if (/email_address_invalid|invalid.*email/i.test(m)) return "Ese correo no parece válido.";
   if (/signup_disabled|Signups not allowed/i.test(m)) return "Por ahora no se pueden crear cuentas nuevas.";
+  // Supabase responde lo mismo si el código está mal o si ya venció.
+  if (/otp_expired|otp_disabled|token has expired|is invalid/i.test(m)) return "El código no es correcto o ya venció. Revísalo o pide uno nuevo.";
   if (/fetch|network|Failed to/i.test(m)) return "No hay conexión. Revisa el internet e inténtalo de nuevo.";
   return "Algo salió mal. Inténtalo de nuevo en un momento.";
 }
@@ -77,8 +79,8 @@ export async function escucharSesion(cb: (evento: AuthChangeEvent, s: Session | 
 }
 
 /**
- * Crea la cuenta. Si el proyecto pide confirmar el correo, Supabase manda el enlace y la sesión
- * se abre al tocarlo; si no, queda abierta de una vez.
+ * Crea la cuenta. Si el proyecto pide confirmar el correo, Supabase manda un código y un enlace;
+ * la sesión se abre al escribir el código o al tocar el enlace. Si no, queda abierta de una vez.
  */
 export async function crearCuenta(nombre: string, email: string, clave: string): Promise<Resultado & { confirmar?: boolean }> {
   if (nombre.trim().length < 2) return { ok: false, campo: "nombre", mensaje: "Escribe tu nombre." };
@@ -110,12 +112,41 @@ export async function entrar(email: string, clave: string): Promise<Resultado> {
   return hacer(() => db.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: clave }));
 }
 
+/** Lo que trae el correo: un código de 6 dígitos (o de hasta 10 si el proyecto lo pide así). */
+export const codigoValido = (c: string) => /^\d{6,10}$/.test(c.replace(/\s/g, ""));
+
+/**
+ * Confirma el correo (o abre el cambio de contraseña) con el código que llegó por correo.
+ * A diferencia del enlace, sirve desde cualquier dispositivo: no depende de dónde se creó la cuenta.
+ */
+export async function verificarCodigo(email: string, codigo: string, tipo: "signup" | "recovery"): Promise<Resultado> {
+  const token = codigo.replace(/\s/g, "");
+  if (!codigoValido(token)) return { ok: false, campo: "codigo", mensaje: "Escribe el código de 6 dígitos que te llegó." };
+  const db = await nube();
+  return hacer(() => db.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: tipo }));
+}
+
+/**
+ * El botón del correo trae ?token_hash=...&type=... y se puede abrir en otro celular o computador.
+ * Devuelve el tipo si había uno en la dirección (y la deja limpia), o null.
+ */
+export async function abrirEnlaceDelCorreo(): Promise<{ tipo: string; r: Resultado } | null> {
+  const q = new URLSearchParams(window.location.search);
+  const token_hash = q.get("token_hash");
+  const tipo = q.get("type");
+  if (!token_hash || !tipo) return null;
+  window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+  const db = await nube();
+  const r = await hacer(() => db.auth.verifyOtp({ token_hash, type: tipo as "signup" | "recovery" | "email" }));
+  return { tipo, r };
+}
+
 export async function reenviarConfirmacion(email: string): Promise<Resultado> {
   const db = await nube();
   return hacer(() => db.auth.resend({ type: "signup", email: email.trim().toLowerCase(), options: { emailRedirectTo: regreso() } }));
 }
 
-/** Manda el enlace para poner una contraseña nueva. Por seguridad no dice si el correo existe. */
+/** Manda el código (y el enlace) para poner una contraseña nueva. Por seguridad no dice si el correo existe. */
 export async function recuperarClave(email: string): Promise<Resultado> {
   if (!emailValido(email)) return { ok: false, campo: "email", mensaje: "Ese correo no parece válido." };
   const db = await nube();

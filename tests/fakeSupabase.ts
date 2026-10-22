@@ -141,6 +141,18 @@ export function fakeSupabase(opciones: { confirmarCorreo?: boolean } = {}) {
         llamadas.push("resend");
         return { data: {}, error: null };
       },
+      /** El código del correo es siempre 123456 en las pruebas; token_hash "bueno" es el del botón. */
+      async verifyOtp(p: { email?: string; token?: string; token_hash?: string; type: string }) {
+        llamadas.push(`verify:${p.type}`);
+        const u = p.token_hash === "bueno" ? usuarios[usuarios.length - 1] : usuarios.find((x) => x.email === p.email);
+        if (!u || (p.token !== undefined && p.token !== "123456") || (p.token_hash !== undefined && p.token_hash !== "bueno")) {
+          return { data: { session: null }, error: err("otp_expired", "Token has expired or is invalid") };
+        }
+        u.confirmado = true;
+        abrir(u);
+        avisar(p.type === "recovery" ? "PASSWORD_RECOVERY" : "SIGNED_IN");
+        return { data: { session: sesion }, error: null };
+      },
       async updateUser(cambios: { password?: string; data?: { nombre?: string } }) {
         const u = usuarios.find((x) => x.id === uid());
         if (!u) return { data: null, error: err("no_session", "Auth session missing") };

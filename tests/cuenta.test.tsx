@@ -33,9 +33,12 @@ function memoryStorage(): Storage {
 }
 
 let fake: ReturnType<typeof fakeSupabase>;
+/** Para preparar el Supabase falso antes de montar (por ejemplo, un usuario que ya existe). */
+let fakeAntes: ((f: ReturnType<typeof fakeSupabase>) => void) | null = null;
 
 function montar({ confirmarCorreo = false, local = new LocalRepository(memoryStorage()) } = {}) {
   fake = fakeSupabase({ confirmarCorreo });
+  fakeAntes?.(fake);
   usarClientePrueba(fake.cliente as unknown as SupabaseClient);
   const router = createMemoryRouter([
     {
@@ -64,6 +67,8 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllEnvs();
   usarClientePrueba(null);
+  fakeAntes = null;
+  window.history.replaceState(null, "", "/");
 });
 
 /** La app ya abrió (se ve el botón de nuevo movimiento). */
@@ -136,6 +141,47 @@ describe("cuentas con Supabase", () => {
     expect((await enApp()).length).toBeGreaterThan(0);
   });
 
+  it("confirma la cuenta con el código del correo, y un código malo avisa", async () => {
+    montar({ confirmarCorreo: true });
+    await userEvent.click(await screen.findByRole("tab", { name: "Crear cuenta" }));
+    await escribir(/Tu nombre/, "Ana");
+    await escribir(/^Correo/, "ana@correo.co");
+    await escribir(/^Contraseña$/, "clave-segura-1");
+    await userEvent.click(screen.getByRole("button", { name: "Crear cuenta" }));
+    expect(await screen.findByRole("heading", { name: "Confirma tu correo" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirmar" })).toBeDisabled();
+
+    await escribir(/^Código/, "999 999");
+    await userEvent.click(screen.getByRole("button", { name: "Confirmar" }));
+    expect(await screen.findByText(/no es correcto o ya venció/)).toBeInTheDocument();
+
+    await escribir(/^Código/, "123456");
+    await userEvent.click(screen.getByRole("button", { name: "Confirmar" }));
+    expect((await enApp()).length).toBeGreaterThan(0);
+    expect(fake.llamadas).toContain("verify:signup");
+  });
+
+  it("el botón del correo funciona aunque se abra en otro dispositivo", async () => {
+    fakeAntes = (f) => f.crearUsuario("ana@correo.co", "clave-segura-1");
+    window.history.replaceState(null, "", "/?token_hash=bueno&type=signup");
+    montar({ confirmarCorreo: true });
+    expect((await enApp()).length).toBeGreaterThan(0);
+    expect(window.location.search).toBe("");
+  });
+
+  it("\"Empezar gratis\" de la presentación abre directo en crear cuenta", async () => {
+    window.history.replaceState(null, "", "/#crear");
+    montar();
+    expect(await screen.findByRole("heading", { name: "Crea tu cuenta" })).toBeInTheDocument();
+    expect(window.location.hash).toBe("");
+  });
+
+  it("si el botón del correo ya venció, lo dice en la pantalla de entrar", async () => {
+    window.history.replaceState(null, "", "/?token_hash=viejo&type=signup");
+    montar({ confirmarCorreo: true });
+    expect(await screen.findByText(/venció o ya se usó/)).toBeInTheDocument();
+  });
+
   it("entrar con contraseña equivocada avisa sin decir cuál falló", async () => {
     montar();
     fake.crearUsuario("orlando@correo.co", "la-buena-123");
@@ -150,12 +196,24 @@ describe("cuentas con Supabase", () => {
     expect((await enApp()).length).toBeGreaterThan(0);
   });
 
+  it("recuperar la contraseña con el código del correo deja poner una nueva", async () => {
+    montar();
+    fake.crearUsuario("orlando@correo.co", "vieja-clave-1");
+    await userEvent.click(await screen.findByRole("button", { name: "¿La olvidaste?" }));
+    await escribir(/^Correo/, "orlando@correo.co");
+    await userEvent.click(screen.getByRole("button", { name: "Enviar código" }));
+    await escribir(/^Código/, "123456");
+    await userEvent.click(screen.getByRole("button", { name: "Seguir" }));
+    expect(await screen.findByRole("heading", { name: "Pon una contraseña nueva" }, { timeout: 3000 })).toBeInTheDocument();
+    expect(fake.llamadas).toContain("verify:recovery");
+  });
+
   it("recuperar la contraseña manda el enlace y el enlace deja poner una nueva", async () => {
     montar();
     fake.crearUsuario("orlando@correo.co", "vieja-clave-1");
     await userEvent.click(await screen.findByRole("button", { name: "¿La olvidaste?" }));
     await escribir(/^Correo/, "orlando@correo.co");
-    await userEvent.click(screen.getByRole("button", { name: "Enviar enlace" }));
+    await userEvent.click(screen.getByRole("button", { name: "Enviar código" }));
     expect(await screen.findByRole("heading", { name: "Revisa tu correo" })).toBeInTheDocument();
     expect(fake.llamadas).toContain("reset");
 

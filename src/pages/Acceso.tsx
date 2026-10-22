@@ -8,6 +8,7 @@ import {
   reenviarConfirmacion,
   recuperarClave,
   type Resultado,
+  verificarCodigo,
 } from "../auth/cuenta";
 import { Icon } from "../components/Icon";
 
@@ -192,9 +193,10 @@ function FormRecuperar({ email, setEmail, onVolver }: { email: string; setEmail:
         </span>
         <h2>Revisa tu correo</h2>
         <p className="muted">
-          Si hay una cuenta con <b>{email.trim()}</b>, te llegará un enlace para poner una contraseña nueva. Puede tardar un par de minutos; mira también en spam.
+          Si hay una cuenta con <b>{email.trim()}</b>, te llegará un código para poner una contraseña nueva. Puede tardar un par de minutos; mira también en spam.
         </p>
-        <button type="button" className="btn btn--big" onClick={onVolver}>
+        <CodigoCorreo email={email} tipo="recovery" boton="Seguir" />
+        <button type="button" className="link" onClick={onVolver}>
           Volver a entrar
         </button>
       </div>
@@ -207,13 +209,13 @@ function FormRecuperar({ email, setEmail, onVolver }: { email: string; setEmail:
         <Icon name="left" size={16} /> Volver
       </button>
       <h2>¿Olvidaste tu contraseña?</h2>
-      <p className="muted">Escribe tu correo y te mandamos un enlace para crear una nueva.</p>
+      <p className="muted">Escribe tu correo y te mandamos un código para crear una nueva.</p>
       <Campo etiqueta="Correo" error={r && !r.ok && r.campo === "email" ? r.mensaje : null}>
         {(id, desc) => <input id={id} aria-describedby={desc} type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />}
       </Campo>
       {r && !r.ok && !r.campo && <p className="form-error" role="alert">{r.mensaje}</p>}
       <button type="submit" className="btn btn--primary btn--big" disabled={enviando}>
-        {enviando ? "Enviando…" : "Enviar enlace"}
+        {enviando ? "Enviando…" : "Enviar código"}
       </button>
     </form>
   );
@@ -240,11 +242,12 @@ function RevisarCorreo({ email, onOtro, onEntrar }: { email: string; onOtro: () 
       </span>
       <h2>Confirma tu correo</h2>
       <p className="muted">
-        Te enviamos un enlace a <b>{email.trim() || "tu correo"}</b>. Ábrelo desde este dispositivo para activar la cuenta; la app se abre sola.
+        Te enviamos un código de 6 dígitos a <b>{email.trim() || "tu correo"}</b>. Escríbelo aquí, o toca el botón del correo desde cualquier celular o computador.
       </p>
+      {email && <CodigoCorreo email={email} tipo="signup" boton="Confirmar" />}
       {r && <p className={r.ok ? "notice" : "form-error"}>{r.ok ? "Listo, te lo enviamos otra vez." : r.mensaje}</p>}
       <div className="acceso__acciones">
-        <button type="button" className="btn" onClick={reenviar} disabled={espera > 0 || !email}>
+        <button type="button" className="btn btn--quiet" onClick={reenviar} disabled={espera > 0 || !email}>
           {espera > 0 ? `Reenviar en ${espera} s` : "Reenviar el correo"}
         </button>
         <button type="button" className="btn btn--quiet" onClick={onOtro}>
@@ -310,6 +313,49 @@ function FormNuevaClave({ onListo }: { onListo?: () => void }) {
       {r && !r.ok && !r.campo && <p className="form-error" role="alert">{r.mensaje}</p>}
       <button type="submit" className="btn btn--primary btn--big" disabled={enviando}>
         {enviando ? "Guardando…" : "Guardar contraseña"}
+      </button>
+    </form>
+  );
+}
+
+/**
+ * El código que llega por correo. Al confirmarlo, Supabase abre la sesión y la app sigue sola
+ * (o pasa a "pon una contraseña nueva" si es para recuperarla).
+ */
+function CodigoCorreo({ email, tipo, boton }: { email: string; tipo: "signup" | "recovery"; boton: string }) {
+  const [codigo, setCodigo] = useState("");
+  const [r, setR] = useState<Resultado | null>(null);
+  const [enviando, setEnviando] = useState(false);
+
+  const enviar = async (e: FormEvent) => {
+    e.preventDefault();
+    setEnviando(true);
+    const res = await verificarCodigo(email, codigo, tipo);
+    setR(res);
+    if (!res.ok) setEnviando(false);
+    // Si sale bien, la app cambia de pantalla al detectar la sesión.
+  };
+
+  return (
+    <form className="form acceso__codigo" onSubmit={enviar} noValidate>
+      <Campo etiqueta="Código" error={r && !r.ok ? r.mensaje : null}>
+        {(id, desc) => (
+          <input
+            id={id}
+            aria-describedby={desc}
+            className="codigo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={10}
+            placeholder="000000"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+            autoFocus
+          />
+        )}
+      </Campo>
+      <button type="submit" className="btn btn--primary btn--big" disabled={enviando || codigo.length < 6}>
+        {enviando ? "Revisando…" : boton}
       </button>
     </form>
   );

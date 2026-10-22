@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RouterProvider, type createHashRouter } from "react-router";
 import { useAppDispatch } from "./app/hooks";
-import { escucharSesion, salir, usuarioDe, type Usuario } from "./auth/cuenta";
+import { abrirEnlaceDelCorreo, escucharSesion, salir, usuarioDe, type Usuario } from "./auth/cuenta";
 import { CuentaContext, type CuentaCtx } from "./auth/CuentaContext";
 import { ledgerApi, setRepository } from "./data/ledgerApi";
 import { LocalRepository } from "./data/local";
@@ -104,6 +104,10 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
       return;
     }
     if (window.location.hash === "#ejemplo") guardar(MODO, "local");
+    // "Empezar gratis" en la presentación abre directo en "Crear cuenta".
+    const vistaInicial: VistaAcceso = window.location.hash === "#crear" ? "crear" : "entrar";
+    if (vistaInicial === "crear") window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    let avisoEnlace: string | null = null;
     let quitar: (() => void) | undefined;
     let vivo = true;
     escucharSesion((evento, sesion) => {
@@ -124,10 +128,21 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
         usarLocal();
         setUsuario(null);
         if (leer(MODO) === "local") setPantalla(local.hasData() ? { tipo: "app" } : { tipo: "bienvenida" });
-        else setPantalla({ tipo: "acceso", vista: "entrar", aviso: avisoDelEnlace() });
+        else setPantalla({ tipo: "acceso", vista: vistaInicial, aviso: avisoEnlace ?? avisoDelEnlace() });
       }, 0);
     })
-      .then((q) => (quitar = q))
+      .then((q) => {
+        quitar = q;
+        // El botón del correo, abierto en este u otro dispositivo: confirma la cuenta o abre el cambio de contraseña.
+        return abrirEnlaceDelCorreo().then((res) => {
+          if (res && !res.r.ok && vivo) {
+            avisoEnlace = res.r.mensaje.startsWith("El código")
+              ? "El enlace del correo venció o ya se usó. Entra con tu contraseña o pide uno nuevo."
+              : res.r.mensaje;
+            setPantalla({ tipo: "acceso", vista: "entrar", aviso: avisoEnlace });
+          }
+        });
+      })
       .catch(() => {
         // No se pudo cargar el cliente (sin internet la primera vez): se sigue sin cuenta.
         usarLocal();
