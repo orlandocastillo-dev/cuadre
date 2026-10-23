@@ -1,8 +1,8 @@
-# Cuadre
+# Qadre
 
 App para llevar las cuentas del mes. La hice porque quería saber cuánta plata me queda de verdad para el resto del mes y en qué se me está yendo, con mis propios números y no con reglas genéricas.
 
-En vivo: https://cuadre-lake.vercel.app (la app está en `/app/`; "Ver con datos de ejemplo" la abre con tres meses de movimientos).
+En vivo: https://qadre-app.vercel.app (la app está en `/app/`; "Ver con datos de ejemplo" la abre con tres meses de movimientos).
 
 ![Resumen en el computador](docs/captura-resumen.png)
 

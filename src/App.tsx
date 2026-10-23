@@ -174,7 +174,7 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
         <main className="welcome" aria-busy="true">
           <p className="brand brand--big cargando">
             <span className="brand__mark" aria-hidden="true" />
-            cuadre
+            qadre
           </p>
         </main>
       );

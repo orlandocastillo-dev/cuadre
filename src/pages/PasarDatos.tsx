@@ -13,7 +13,7 @@ export function PasarDatos({ local, nombre, onPasar, onOmitir }: { local: Ledger
       <div className="welcome__inner">
         <p className="brand brand--big">
           <span className="brand__mark" aria-hidden="true" />
-          cuadre
+          qadre
         </p>
         <h1 className="pasar__titulo">Hola, {nombre}. ¿Pasamos lo que tenías en este dispositivo?</h1>
         <p className="welcome__lead">

@@ -3,7 +3,7 @@
 const DAYS = 31;
 const INCOME = 3_300_000;
 
-/** Pagos que se repiten cada mes: Cuadre ya los conoce por los meses anteriores. */
+/** Pagos que se repiten cada mes: Qadre ya los conoce por los meses anteriores. */
 const FIXED = [
   [2, "Arriendo", 850_000],
   [2, "Diezmo", 290_000],

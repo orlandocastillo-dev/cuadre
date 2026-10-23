@@ -75,7 +75,7 @@ export function Importar() {
       <header className="title-row">
         <h1>Importar extracto</h1>
         <p className="muted">
-          Descarga el extracto de tu banco en CSV (Bancolombia, Nequi, Davivienda y otros) y súbelo aquí. Cuadre reconoce las columnas y
+          Descarga el extracto de tu banco en CSV (Bancolombia, Nequi, Davivienda y otros) y súbelo aquí. Qadre reconoce las columnas y
           clasifica cada movimiento; tú revisas antes de guardar.
         </p>
       </header>
@@ -146,7 +146,7 @@ export function Importar() {
           </div>
           <p className="muted small">
             {rows.filter((r) => r.keep).length} de {rows.length} seleccionados.
-            {rows.some((r) => r.duplicate) && " Los que ya tenías quedaron sin marcar."} Si cambias una categoría, Cuadre la recuerda para la próxima vez.
+            {rows.some((r) => r.duplicate) && " Los que ya tenías quedaron sin marcar."} Si cambias una categoría, Qadre la recuerda para la próxima vez.
           </p>
           <ul className="review">
             {rows.map((r, i) => (

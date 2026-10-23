@@ -62,9 +62,9 @@ export function Layout() {
       </a>
       <div className="shell">
         <aside className="side">
-          <NavLink to="/" className="brand" aria-label="Cuadre, inicio">
+          <NavLink to="/" className="brand" aria-label="Qadre, inicio">
             <span className="brand__mark" aria-hidden="true" />
-            cuadre
+            qadre
           </NavLink>
           <button type="button" className="btn btn--primary side__add" onClick={() => open()}>
             <Icon name="plus" size={18} /> Nuevo movimiento
@@ -101,9 +101,9 @@ export function Layout() {
 
         <div className="main-col">
           <header className="topbar">
-            <NavLink to="/" className="brand" aria-label="Cuadre, inicio">
+            <NavLink to="/" className="brand" aria-label="Qadre, inicio">
               <span className="brand__mark" aria-hidden="true" />
-              cuadre
+              qadre
             </NavLink>
             <div className="topbar__actions">
               <button type="button" className="icon-btn" aria-pressed={hideAmounts} onClick={() => dispatch(prefsChanged({ hideAmounts: !hideAmounts }))} aria-label={hideAmounts ? "Mostrar montos" : "Ocultar montos"}>

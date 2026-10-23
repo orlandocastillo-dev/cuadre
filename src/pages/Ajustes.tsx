@@ -32,7 +32,7 @@ export function Ajustes() {
       await replace({ ...emptyLedger(), ...data });
       setMessage(`Se restauró el respaldo con ${data.transactions.length} movimientos.`);
     } catch {
-      setMessage("Ese archivo no es un respaldo de Cuadre.");
+      setMessage("Ese archivo no es un respaldo de Qadre.");
     }
   };
 

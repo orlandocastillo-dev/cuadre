@@ -25,12 +25,12 @@ export function Bienvenida({ onDone, onCuenta }: { onDone: () => void; onCuenta?
         {/* La app vive en /app/ y la presentación en la raíz; en el archivo portátil no hay a dónde volver. */}
         {window.location.protocol !== "file:" && (
           <a className="welcome__back" href="../">
-            ‹ Volver a la página de Cuadre
+            ‹ Volver a la página de Qadre
           </a>
         )}
         <p className="brand brand--big">
           <span className="brand__mark" aria-hidden="true" />
-          cuadre
+          qadre
         </p>
         <h1>Cuánto te queda, en qué se te va y qué puedes ajustar.</h1>
         <p className="welcome__lead">

@@ -34,12 +34,12 @@ export function Acceso({ vista: inicial = "entrar", onSinCuenta, onClaveCambiada
       <section className="acceso__lado">
         {window.location.protocol !== "file:" && (
           <a className="welcome__back" href="../">
-            ‹ Volver a la página de Cuadre
+            ‹ Volver a la página de Qadre
           </a>
         )}
         <p className="brand brand--big">
           <span className="brand__mark" aria-hidden="true" />
-          cuadre
+          qadre
         </p>
         <h1 className="acceso__titulo">Tus cuentas, en todos tus dispositivos.</h1>
         <ul className="acceso__puntos">
