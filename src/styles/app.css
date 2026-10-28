@@ -1019,10 +1019,21 @@ textarea:focus,
   display: grid;
   gap: 1rem;
 }
+/* El botón de guardar siempre a la vista, abajo, donde llega el pulgar */
 .sheet__foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
   display: flex;
   gap: 0.6rem;
-  padding-top: 0.25rem;
+  margin: 0 -1.4rem -1.4rem;
+  padding: 0.75rem 1.4rem 1.1rem;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.sheet__foot .btn {
+  min-height: 52px;
+  font-size: 1rem;
 }
 
 .kind {
@@ -1503,9 +1514,12 @@ label.setting {
     background: var(--surface);
   }
   .tabs__item {
+    position: relative;
     display: grid;
     justify-items: center;
+    align-content: center;
     gap: 0.1rem;
+    min-height: 52px;
     padding: 0.3rem 0;
     color: var(--faint);
     font-size: 0.7rem;
@@ -1515,13 +1529,22 @@ label.setting {
   .tabs__item.active {
     color: var(--ink);
   }
+  .tabs__item.active::before {
+    content: "";
+    position: absolute;
+    top: -0.35rem;
+    width: 28px;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--ink);
+  }
   .tabs__add {
     justify-self: center;
     display: grid;
     place-items: center;
-    width: 54px;
-    height: 54px;
-    margin-top: -22px;
+    width: 60px;
+    height: 60px;
+    margin-top: -26px;
     border: 4px solid var(--bg);
     border-radius: 50%;
     background: var(--ink);
@@ -1559,6 +1582,43 @@ label.setting {
   .sheet__head {
     margin: -1rem -1.1rem 0;
     padding: 0.9rem 1.1rem 0.6rem;
+  }
+  .sheet__foot {
+    margin: 0 -1.1rem calc(-1.1rem - env(safe-area-inset-bottom));
+    padding: 0.7rem 1.1rem calc(0.8rem + env(safe-area-inset-bottom));
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .kind__btn {
+    height: 46px;
+    font-size: 1rem;
+  }
+  .seg button,
+  .dates button,
+  .dates input {
+    min-height: 44px;
+    height: 44px;
+    padding-inline: 1rem;
+    font-size: 0.95rem;
+  }
+  .cat {
+    min-height: 78px;
+    padding: 0.6rem 0.2rem;
+  }
+  .cat__icon {
+    width: 42px;
+    height: 42px;
+  }
+  .cat__name {
+    font-size: 0.78rem;
+  }
+  select {
+    height: 44px;
+  }
+  .tx {
+    min-height: 60px;
   }
 }
 

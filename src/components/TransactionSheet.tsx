@@ -47,7 +47,12 @@ export function TransactionSheet({ open, edit, kind: initialKind, categoryId: in
     }
   }, [open]);
 
-  const categories = useMemo(() => ledger.categories.filter((c) => c.kind === kind), [ledger.categories, kind]);
+  // Las que más usas quedan arriba, al alcance del pulgar.
+  const categories = useMemo(() => {
+    const usos = new Map<string, number>();
+    for (const tx of ledger.transactions) usos.set(tx.categoryId, (usos.get(tx.categoryId) ?? 0) + 1);
+    return ledger.categories.filter((c) => c.kind === kind).sort((a, b) => (usos.get(b.id) ?? 0) - (usos.get(a.id) ?? 0));
+  }, [ledger.categories, ledger.transactions, kind]);
   const parsed = parseAmount(amount);
   const todayISO = useToday();
 
@@ -71,7 +76,14 @@ export function TransactionSheet({ open, edit, kind: initialKind, categoryId: in
   };
 
   return (
-    <dialog ref={dialog} className="sheet" onClose={onClose} onCancel={onClose} aria-labelledby="sheet-title">
+    <dialog
+      ref={dialog}
+      className="sheet"
+      onClose={onClose}
+      onCancel={onClose}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      aria-labelledby="sheet-title"
+    >
       <form className="sheet__body" onSubmit={submit} noValidate>
         <header className="sheet__head">
           <h2 id="sheet-title">{edit ? "Editar movimiento" : "Nuevo movimiento"}</h2>
@@ -103,7 +115,7 @@ export function TransactionSheet({ open, edit, kind: initialKind, categoryId: in
           </span>
           <input
             aria-label="Valor en pesos"
-            inputMode="decimal"
+            inputMode="numeric"
             autoComplete="off"
             placeholder="0"
             value={amount}
@@ -199,6 +211,7 @@ export function TransactionSheet({ open, edit, kind: initialKind, categoryId: in
           )}
           <button type="submit" className="btn btn--primary btn--grow" disabled={saving.isLoading}>
             {edit ? "Guardar cambios" : kind === "gasto" ? "Registrar gasto" : "Registrar ingreso"}
+            {!edit && parsed && parsed > 0 ? <span aria-hidden="true">&nbsp;de {cop(parsed)}</span> : null}
           </button>
         </footer>
       </form>
