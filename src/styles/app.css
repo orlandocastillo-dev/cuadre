@@ -217,11 +217,11 @@ textarea {
   text-decoration: none;
 }
 .brand__mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: linear-gradient(var(--in) 0 50%, var(--out) 50% 100%);
-  transform: rotate(-12deg);
+  width: 24px;
+  height: 24px;
+  flex: none;
+  /* Una moneda partida: arriba lo que entra, abajo lo que sale, corrida como cuando se cuadra */
+  background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M2.5 11a9 9 0 0 1 18 0z%27 fill=%27%231f9a6f%27/%3E%3Cpath d=%27M3.5 13a9 9 0 0 0 18 0z%27 fill=%27%237a6de0%27/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .side .brand {
   padding: 0 0.6rem;
