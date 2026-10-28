@@ -99,6 +99,9 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
       return;
     }
     if (window.location.hash === "#ejemplo") guardar(MODO, "local");
+    // Si se llega desde el correo, manda el correo: no se abre el modo sin cuenta que haya quedado guardado.
+    const desdeCorreo = /[?&](code|token_hash|error_description)=/.test(window.location.search);
+    if (desdeCorreo) guardar(MODO, null);
     // "Empezar gratis" en la presentación abre directo en "Crear cuenta".
     const vistaInicial: VistaAcceso = window.location.hash === "#crear" ? "crear" : "entrar";
     if (vistaInicial === "crear") window.history.replaceState(null, "", window.location.pathname + window.location.search);
@@ -123,7 +126,7 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
         usarLocal();
         setUsuario(null);
         if (leer(MODO) === "local") setPantalla(local.hasData() ? { tipo: "app" } : { tipo: "bienvenida" });
-        else setPantalla({ tipo: "acceso", vista: vistaInicial, aviso: avisoEnlace ?? avisoDelEnlace() });
+        else setPantalla({ tipo: "acceso", vista: vistaInicial, aviso: avisoEnlace ?? avisoDelEnlace() ?? (desdeCorreo ? "Tu correo quedó confirmado. Entra con tu correo y contraseña." : null) });
       }, 0);
     })
       .then((q) => {
