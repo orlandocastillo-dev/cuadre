@@ -88,7 +88,8 @@ export function Acceso({ vista: inicial = "entrar", onSinCuenta, onClaveCambiada
         )}
         {window.location.protocol !== "file:" && (
           <p className="acceso__docs muted small">
-            <a href="../privacidad.html">Privacidad</a> · <a href="../terminos.html">Términos</a>
+            <a href="../privacidad.html">Privacidad</a>
+            <a href="../terminos.html">Términos</a>
           </p>
         )}
       </section>

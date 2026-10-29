@@ -56,6 +56,8 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
     return { tipo: "cargando" };
   });
   const usuarioActual = useRef<string | null>(null);
+  // Lo que pidió la presentación (#ejemplo, #crear). Se lee una vez al abrir: la bienvenida limpia la dirección antes de que corra el efecto de aquí.
+  const pedido = useRef(window.location.hash);
 
   const usarLocal = useCallback(() => {
     setRepository(local);
@@ -98,14 +100,14 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
       setRepository(local);
       return;
     }
-    if (window.location.hash === "#ejemplo") guardar(MODO, "local");
+    if (pedido.current === "#ejemplo") guardar(MODO, "local");
     // "Empezar gratis" es para crear la cuenta propia, aunque antes se haya mirado el ejemplo en este celular.
-    if (window.location.hash === "#crear") guardar(MODO, null);
+    if (pedido.current === "#crear") guardar(MODO, null);
     // Si se llega desde el correo, manda el correo: no se abre el modo sin cuenta que haya quedado guardado.
     const desdeCorreo = /[?&](code|token_hash|error_description)=/.test(window.location.search);
     if (desdeCorreo) guardar(MODO, null);
     // "Empezar gratis" en la presentación abre directo en "Crear cuenta".
-    const vistaInicial: VistaAcceso = window.location.hash === "#crear" ? "crear" : "entrar";
+    const vistaInicial: VistaAcceso = pedido.current === "#crear" ? "crear" : "entrar";
     if (vistaInicial === "crear") window.history.replaceState(null, "", window.location.pathname + window.location.search);
     let avisoEnlace: string | null = null;
     let quitar: (() => void) | undefined;

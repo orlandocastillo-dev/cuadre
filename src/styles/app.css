@@ -2190,6 +2190,9 @@ input.codigo::placeholder {
   color: var(--ink);
 }
 .acceso__docs {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
   text-align: center;
 }
 .acceso__docs a {
