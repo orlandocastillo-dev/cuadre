@@ -2195,3 +2195,387 @@ input.codigo::placeholder {
 .acceso__docs a {
   color: inherit;
 }
+
+/* Aviso de datos de ejemplo */
+
+.ejemplo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin: 0.75rem clamp(1rem, 3vw, 2.5rem) 0;
+  padding: 0.75rem 0.9rem 0.75rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--line));
+  border-radius: 14px;
+  background: var(--warn-wash);
+  font-size: 0.92rem;
+}
+.ejemplo__acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Tarjeta que lleva a la guía del presupuesto */
+
+.guia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.12s, border-color 0.15s;
+}
+.guia:hover {
+  border-color: var(--ink);
+}
+.guia:active {
+  transform: scale(0.985);
+}
+.guia strong {
+  display: block;
+  font: 400 1.35rem / 1.1 var(--display);
+}
+.guia small {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+.guia__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--in-wash);
+  color: var(--in);
+}
+.guia__otra {
+  justify-self: start;
+}
+
+/* Anotar un gasto con un toque */
+
+.rapido {
+  display: grid;
+  gap: 0.75rem;
+}
+.rapido__titulo {
+  font: 400 1.65rem / 1.1 var(--display);
+}
+.rapido__lista {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+.rapido__cat {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.45rem;
+  min-height: 104px;
+  padding: 0.8rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s;
+}
+.rapido__cat:hover {
+  border-color: var(--cfg);
+}
+.rapido__cat:active {
+  transform: scale(0.96);
+  box-shadow: inset 0 0 0 2px var(--cfg);
+}
+.rapido__icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  background: var(--cbg);
+  color: var(--cfg);
+}
+.rapido__nombre {
+  font-size: 0.82rem;
+  font-weight: 550;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Armar el presupuesto */
+
+.armar {
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+.armar__pasos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.armar__pasos span {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--line);
+  transition: background-color 0.3s;
+}
+.armar__pasos span.is-on {
+  background: var(--ink);
+}
+.armar__paso {
+  display: grid;
+  gap: 1rem;
+  animation: armar-entra 0.3s ease-out;
+}
+@keyframes armar-entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.armar__num {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 550;
+}
+.armar__paso h1 {
+  font: 400 clamp(2.2rem, 8vw, 3rem) / 1.02 var(--display);
+  letter-spacing: -0.01em;
+}
+.armar__monto {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--ink);
+}
+.armar__monto span {
+  color: var(--faint);
+  font: 400 2.6rem var(--display);
+}
+.armar__monto input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: 400 3.4rem / 1.05 var(--display);
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.armar__check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  color: var(--muted);
+}
+.armar__check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--in);
+}
+.armar__seguir {
+  margin-top: 0.5rem;
+}
+.armar__cats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.armar__cat {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 60px;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 550;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, background-color 0.15s;
+}
+.armar__cat:active {
+  transform: scale(0.97);
+}
+.armar__cat[aria-pressed="true"] {
+  border-color: var(--cfg);
+  background: var(--cbg);
+}
+.armar__cat-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--cbg);
+  color: var(--cfg);
+}
+.armar__cat[aria-pressed="true"] .armar__cat-icon {
+  background: var(--cfg);
+  color: var(--surface);
+}
+.armar__nav {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  background: var(--bg);
+}
+.armar__limites {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.armar__limites li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+}
+.armar__limites li + li {
+  border-top: 1px solid var(--line);
+}
+.armar__nombre {
+  font-weight: 550;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+.armar__valor {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  width: 132px;
+  height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
+  background: var(--bg);
+}
+.armar__valor span {
+  color: var(--faint);
+}
+.armar__valor input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  outline: none;
+}
+.armar__cuenta {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--muted);
+}
+.armar__cuenta strong {
+  color: var(--in);
+}
+.armar__cuenta.is-over strong {
+  color: var(--over);
+}
+.armar__barra {
+  height: 10px;
+  border-radius: 6px;
+  background: var(--line);
+  overflow: hidden;
+}
+.armar__barra span {
+  display: block;
+  height: 100%;
+  background: var(--out);
+  transition: width 0.3s;
+}
+.armar__cuenta.is-over .armar__barra span {
+  background: var(--over);
+}
+
+/* Resumen en el celular: menos cosas a la vez y lo que se toca, a la mano */
+
+@media (max-width: 900px) {
+  .page--dash {
+    gap: 1.4rem;
+  }
+  .page--dash .hero {
+    gap: 1rem;
+    padding: 1.3rem 1.2rem 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+  }
+  .page--dash .hero__amount {
+    font-size: clamp(3rem, 15vw, 4.2rem);
+  }
+  .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+  .stats > div,
+  .stats > div:nth-child(odd) {
+    padding: 0 0.7rem;
+    border-left: 1px solid var(--line);
+  }
+  .stats > div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+  /* "A ahorro" se ve en Metas; aquí estorba */
+  .stats > div:nth-child(3) {
+    display: none;
+  }
+  .stats dd {
+    font-size: 1rem;
+  }
+  .pace__text {
+    font-size: 0.88rem;
+  }
+  .page--dash .grid {
+    gap: 1.1rem;
+  }
+  .panel {
+    padding: 1.15rem 1.1rem 1.2rem;
+    border-radius: 20px;
+  }
+  .panel--recent {
+    order: 1;
+  }
+  .panel--recos {
+    order: 2;
+  }
+  .panel--trend {
+    order: 3;
+  }
+  .rapido__cat {
+    min-height: 96px;
+  }
+  .tx:active,
+  .bars__row:active {
+    background: var(--bg);
+  }
+}
+@media (max-width: 380px) {
+  .rapido__lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

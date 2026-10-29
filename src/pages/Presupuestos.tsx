@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import { useLedger, useMoney, useMonth, useToday } from "../app/hooks";
 import { Icon } from "../components/Icon";
 import { MonthSwitcher } from "../components/MonthSwitcher";
@@ -37,6 +38,23 @@ export function Presupuestos() {
             : "Ponle un límite mensual a las categorías donde quieres gastar menos."}
         </p>
       </header>
+
+      {withBudget.length === 0 ? (
+        <Link to="/armar" className="guia">
+          <span className="guia__icon" aria-hidden="true">
+            <Icon name="target" size={22} />
+          </span>
+          <span>
+            <strong>Arma tu presupuesto en tres pasos</strong>
+            <small>Cuánto te entra, en qué se te va y cuánto para cada cosa.</small>
+          </span>
+          <Icon name="right" />
+        </Link>
+      ) : (
+        <Link to="/armar" className="link guia__otra">
+          Rehacerlo con la guía
+        </Link>
+      )}
 
       {withBudget.length > 0 && (
         <ul className="budgets">

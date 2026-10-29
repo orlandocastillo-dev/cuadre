@@ -29,6 +29,14 @@ export function Resumen() {
     return all.slice(Math.max(0, Math.min(first < 0 ? 3 : first, 3)));
   }, [ledger, month]);
   const cats = useMemo(() => topCategories(t, ledger.categories), [t, ledger.categories]);
+  // Las cuatro categorías que más usa, para registrar con un toque.
+  const rapidas = useMemo(() => {
+    const usos = new Map<string, number>();
+    for (const tx of ledger.transactions) if (tx.kind === "gasto") usos.set(tx.categoryId, (usos.get(tx.categoryId) ?? 0) + 1);
+    const gastos = ledger.categories.filter((c) => c.kind === "gasto");
+    const orden = [...gastos].sort((a, b) => (usos.get(b.id) ?? 0) - (usos.get(a.id) ?? 0));
+    return (usos.size ? orden : gastos.filter((c) => ["mercado", "transporte", "domicilios", "cafe"].includes(c.id))).slice(0, 4);
+  }, [ledger.transactions, ledger.categories]);
   const recent = useMemo(() => inMonth(ledger.transactions, month).slice().sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)).slice(0, 6), [ledger.transactions, month]);
 
   if (isLoading) return <p className="muted">Cargando…</p>;
@@ -108,6 +116,36 @@ export function Resumen() {
         )}
       </section>
 
+      {isCurrent && (
+        <section className="rapido" aria-labelledby="h-rapido">
+          <h2 id="h-rapido" className="rapido__titulo">
+            Anotar un gasto
+          </h2>
+          <div className="rapido__lista">
+            {rapidas.map((c) => (
+              <button key={c.id} type="button" className={`rapido__cat cat--c${c.color}`} onClick={() => open({ kind: "gasto", categoryId: c.id })}>
+                <span className="rapido__icon">
+                  <Icon name={c.icon} size={22} />
+                </span>
+                <span className="rapido__nombre">{c.name}</span>
+              </button>
+            ))}
+          </div>
+          {ledger.budgets.length === 0 && (
+            <Link to="/armar" className="guia">
+              <span className="guia__icon" aria-hidden="true">
+                <Icon name="target" size={22} />
+              </span>
+              <span>
+                <strong>Arma tu presupuesto</strong>
+                <small>Tres pasos y sabes cuánto te toca para cada cosa.</small>
+              </span>
+              <Icon name="right" />
+            </Link>
+          )}
+        </section>
+      )}
+
       <div className="grid">
         <section className="panel panel--cats" aria-labelledby="h-cats">
           <div className="panel__head">
@@ -118,7 +156,7 @@ export function Resumen() {
           </div>
           {cats.length ? (
             <ul className="bars">
-              {cats.slice(0, 8).map(({ category, amount }) => {
+              {cats.slice(0, 6).map(({ category, amount }) => {
                 const limit = budgets.get(category.id);
                 const over = limit !== undefined && amount > limit;
                 return (
@@ -156,11 +194,11 @@ export function Resumen() {
           <div className="panel__head">
             <h2 id="h-recos">Recomendaciones</h2>
           </div>
-          <Insights items={tips} limit={5} />
-          {tips.length > 5 && (
+          <Insights items={tips} limit={3} />
+          {tips.length > 3 && (
             <details className="more">
-              <summary>Ver {tips.length - 5} más</summary>
-              <Insights items={tips.slice(5)} />
+              <summary>Ver {tips.length - 3} más</summary>
+              <Insights items={tips.slice(3)} />
             </details>
           )}
           <p className="fineprint">Calculadas con tus propios movimientos. No son asesoría financiera.</p>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useCuenta } from "../auth/CuentaContext";
 import { prefsChanged } from "../features/prefs";
@@ -7,6 +7,9 @@ import type { Kind, Transaction } from "../domain/types";
 import { Icon } from "./Icon";
 import { SheetContext } from "./sheet";
 import { TransactionSheet } from "./TransactionSheet";
+import { useReplaceAllMutation } from "../data/ledgerApi";
+import { emptyLedger } from "../domain/seed";
+import { esEjemplo, marcarEjemplo } from "../pages/Bienvenida";
 
 const NAV = [
   { to: "/", label: "Resumen", icon: "gauge" },
@@ -33,7 +36,16 @@ export function Layout() {
   const dispatch = useAppDispatch();
   const { theme, hideAmounts } = useAppSelector((s) => s.prefs);
   const [sheet, setSheet] = useState<SheetState>({ key: 0, open: false });
-  const { usuario, cerrarSesion } = useCuenta();
+  const { usuario, cerrarSesion, modo, nubeDisponible, irAAcceso } = useCuenta();
+  const navigate = useNavigate();
+  const [replaceAll] = useReplaceAllMutation();
+  const [ejemplo, setEjemplo] = useState(() => modo === "local" && esEjemplo());
+  const empezarElMio = async () => {
+    await replaceAll(emptyLedger());
+    marcarEjemplo(false);
+    setEjemplo(false);
+    navigate("/armar");
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -122,6 +134,23 @@ export function Layout() {
               )}
             </div>
           </header>
+          {ejemplo && modo === "local" && (
+            <div className="ejemplo" role="status">
+              <p>
+                <strong>Estás viendo datos de ejemplo.</strong> Nada de esto es tuyo.
+              </p>
+              <div className="ejemplo__acciones">
+                {nubeDisponible && (
+                  <button type="button" className="btn btn--primary btn--small" onClick={() => irAAcceso("crear")}>
+                    Crear mi cuenta
+                  </button>
+                )}
+                <button type="button" className={`btn btn--small ${nubeDisponible ? "" : "btn--primary"}`} onClick={() => void empezarElMio()}>
+                  Empezar de cero
+                </button>
+              </div>
+            </div>
+          )}
           <main id="contenido" className="main">
             <Outlet />
           </main>

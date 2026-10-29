@@ -18,6 +18,7 @@ import { Importar } from "./pages/Importar";
 import { Metas } from "./pages/Metas";
 import { Movimientos } from "./pages/Movimientos";
 import { Presupuestos } from "./pages/Presupuestos";
+import { Armar } from "./pages/Armar";
 import { Resumen } from "./pages/Resumen";
 
 // Sin cuenta, los datos viven en el navegador
@@ -34,6 +35,7 @@ const router = createHashRouter([
       { index: true, element: <Resumen /> },
       { path: "movimientos", element: <Movimientos /> },
       { path: "presupuestos", element: <Presupuestos /> },
+      { path: "armar", element: <Armar /> },
       { path: "metas", element: <Metas /> },
       { path: "importar", element: <Importar /> },
       { path: "ajustes", element: <Ajustes /> },

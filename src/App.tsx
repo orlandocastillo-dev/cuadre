@@ -99,6 +99,8 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
       return;
     }
     if (window.location.hash === "#ejemplo") guardar(MODO, "local");
+    // "Empezar gratis" es para crear la cuenta propia, aunque antes se haya mirado el ejemplo en este celular.
+    if (window.location.hash === "#crear") guardar(MODO, null);
     // Si se llega desde el correo, manda el correo: no se abre el modo sin cuenta que haya quedado guardado.
     const desdeCorreo = /[?&](code|token_hash|error_description)=/.test(window.location.search);
     if (desdeCorreo) guardar(MODO, null);

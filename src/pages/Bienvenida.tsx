@@ -8,6 +8,9 @@ export function Bienvenida({ onDone, onCuenta }: { onDone: () => void; onCuenta?
   const [replace, state] = useReplaceAllMutation();
   const start = async (demo: boolean) => {
     await replace(demo ? demoLedger(today()) : emptyLedger());
+    marcarEjemplo(demo);
+    // Empezar de cero lleva directo a armar el presupuesto.
+    if (!demo) window.location.hash = "#/armar";
     onDone();
   };
 
@@ -39,7 +42,7 @@ export function Bienvenida({ onDone, onCuenta }: { onDone: () => void; onCuenta?
         </p>
         <div className="welcome__actions">
           <button type="button" className="btn btn--primary btn--big" onClick={() => start(false)} disabled={state.isLoading}>
-            Empezar
+            Empezar con mis datos
           </button>
           <button type="button" className="btn btn--big" onClick={() => start(true)} disabled={state.isLoading}>
             Ver con datos de ejemplo
@@ -56,4 +59,22 @@ export function Bienvenida({ onDone, onCuenta }: { onDone: () => void; onCuenta?
       </div>
     </main>
   );
+}
+
+/** Se recuerda si lo que hay en el dispositivo es el ejemplo, para avisarlo arriba y ofrecer empezar el propio. */
+export const EJEMPLO = "cuadre:ejemplo";
+export function marcarEjemplo(si: boolean) {
+  try {
+    if (si) localStorage.setItem(EJEMPLO, "1");
+    else localStorage.removeItem(EJEMPLO);
+  } catch {
+    // modo privado
+  }
+}
+export function esEjemplo() {
+  try {
+    return localStorage.getItem(EJEMPLO) === "1";
+  } catch {
+    return false;
+  }
 }

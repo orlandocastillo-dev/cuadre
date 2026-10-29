@@ -14,6 +14,7 @@ import { Importar } from "../src/pages/Importar";
 import { Metas } from "../src/pages/Metas";
 import { Movimientos } from "../src/pages/Movimientos";
 import { Presupuestos } from "../src/pages/Presupuestos";
+import { Armar } from "../src/pages/Armar";
 import { Resumen } from "../src/pages/Resumen";
 
 /** Un almacenamiento en memoria para cada prueba. */
@@ -48,6 +49,7 @@ async function renderApp(path = "/", ledger: Ledger = emptyLedger()) {
           { index: true, element: <Resumen /> },
           { path: "movimientos", element: <Movimientos /> },
           { path: "presupuestos", element: <Presupuestos /> },
+          { path: "armar", element: <Armar /> },
           { path: "metas", element: <Metas /> },
           { path: "importar", element: <Importar /> },
         ],
@@ -162,5 +164,23 @@ describe("importar extracto", () => {
     expect(l.transactions).toHaveLength(6);
     expect(l.transactions.find((t) => t.note === "Transf Nequi Juan Perez")?.categoryId).toBe("salidas");
     expect(l.rules[0]).toEqual({ pattern: "transf nequi juan", categoryId: "salidas" });
+  });
+});
+
+describe("armar el presupuesto", () => {
+  it("propone límites según el ingreso y los guarda", async () => {
+    const user = userEvent.setup();
+    await renderApp("/armar");
+    await user.type(screen.getByLabelText("Ingreso mensual"), "2000000");
+    await user.click(screen.getByRole("button", { name: "Seguir" }));
+    await user.click(screen.getByRole("button", { name: /Seguir con/ }));
+    // Arriendo y servicios se lleva el 30 %
+    expect(screen.getByLabelText("Límite para Arriendo y servicios")).toHaveValue("600.000");
+    await user.click(screen.getByRole("button", { name: "Guardar mi presupuesto" }));
+    await waitFor(async () => {
+      const l = await repo.load();
+      expect(l.budgets.find((b) => b.categoryId === "hogar")?.limit).toBe(600000);
+      expect(l.transactions.some((t) => t.kind === "ingreso" && t.amount === 2000000)).toBe(true);
+    });
   });
 });
