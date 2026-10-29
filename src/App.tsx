@@ -9,7 +9,7 @@ import { nube, nubeDisponible } from "./data/nube";
 import { SupabaseRepository } from "./data/supabase";
 import type { Ledger } from "./domain/types";
 import { Acceso, type VistaAcceso } from "./pages/Acceso";
-import { Bienvenida } from "./pages/Bienvenida";
+import { Bienvenida, esEjemplo } from "./pages/Bienvenida";
 import { PasarDatos } from "./pages/PasarDatos";
 
 type Router = ReturnType<typeof createHashRouter>;
@@ -85,7 +85,8 @@ export function App({ router, local }: { router: Router; local: LocalRepository 
       guardar(MODO, null);
 
       const ofrecidos = (leer(OFRECIDO) ?? "").split(",");
-      if (local.hasData() && !ofrecidos.includes(u.id)) {
+      // Lo del ejemplo no se ofrece pasar a la cuenta: son datos de mentira.
+      if (local.hasData() && !esEjemplo() && !ofrecidos.includes(u.id)) {
         const datos = await local.load();
         const vacia = datos.transactions.length > 0 && (await repo.estaVacia().catch(() => false));
         if (vacia) return setPantalla({ tipo: "pasar", local: datos });
